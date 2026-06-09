@@ -75,9 +75,9 @@ def run_bot_cycle():
         point = symbol_info.point
         sl_points = abs(price - le['fmd']) / point
         
-        # Standardize minimum SL to avoid extreme tightness
-        sl_points = max(sl_points, 100)
-        tp_points = sl_points * 2  # 1:2 Risk to Reward
+        # Standardize minimum SL for scalping (very tight)
+        sl_points = max(sl_points, 20)
+        tp_points = sl_points * 1.5  # Aggressive 1:1.5 Risk to Reward for fast exits
         
         lot = calculate_lot_size(symbol, sl_points)
         if lot < 0.01: 
@@ -116,8 +116,8 @@ if __name__ == "__main__":
     try:
         while True:
             run_bot_cycle()
-            print("Sleeping for 5 minutes...")
-            time.sleep(300)  # Wait 5 minutes before checking again
+            log("Sleeping for 15 seconds for rapid scalping scan...")
+            time.sleep(15)  # Wait 15 seconds for high-frequency scanning
     except KeyboardInterrupt:
         print("Bot stopped by user.")
         mt5.shutdown()
