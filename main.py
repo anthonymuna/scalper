@@ -63,17 +63,23 @@ def run_bot_cycle():
             
         log(f"  -> SETUP DETECTED! {trend_direction.capitalize()} alignment with LE on {symbol}. FMD: {le['fmd']}")
         
-        # 4. Execute Trade
+        # 4. Execute Sniper Limit Trade
         symbol_info = mt5.symbol_info(symbol)
         if not symbol_info:
             continue
             
-        order_type = mt5.ORDER_TYPE_BUY if trend_direction == 'bullish' else mt5.ORDER_TYPE_SELL
-        price = symbol_info.ask if order_type == mt5.ORDER_TYPE_BUY else symbol_info.bid
+        # Determine 50% Retracement limit price
+        limit_price = (le['fmd'] + le['choch_price']) / 2.0
+        limit_price = round(limit_price, symbol_info.digits)
         
-        # Calculate SL distance in points using FMD (Further Most Deviation)
+        order_type = mt5.ORDER_TYPE_BUY_LIMIT if trend_direction == 'bullish' else mt5.ORDER_TYPE_SELL_LIMIT
+        
+        # Current price (just for SL calculation distance if needed, but we base SL on limit_price)
+        current_price = symbol_info.ask if trend_direction == 'bullish' else symbol_info.bid
+        
+        # Calculate SL distance in points using FMD
         point = symbol_info.point
-        sl_points = abs(price - le['fmd']) / point
+        sl_points = abs(limit_price - le['fmd']) / point
         
         # Standardize minimum SL for scalping (very tight)
         sl_points = max(sl_points, 20)
@@ -83,20 +89,24 @@ def run_bot_cycle():
         if lot < 0.01: 
             lot = 0.01
             
-        sl, tp = calculate_sl_tp(order_type, price, sl_points, tp_points, symbol_info)
+        sl, tp = calculate_sl_tp(mt5.ORDER_TYPE_BUY if trend_direction == 'bullish' else mt5.ORDER_TYPE_SELL, limit_price, sl_points, tp_points, symbol_info)
+        
+        # Set expiration for 10 minutes in the future
+        expiration = int(time.time() + 600)
         
         request = {
-            'action': mt5.TRADE_ACTION_DEAL,
+            'action': mt5.TRADE_ACTION_PENDING,
             'symbol': symbol,
             'volume': float(lot),
             'type': order_type,
-            'price': price,
+            'price': limit_price,
             'sl': sl,
             'tp': tp,
             'deviation': 20,
             'magic': MAGIC_NUMBER,
-            'comment': 'AOL LE Entry',
-            'type_time': mt5.ORDER_TIME_GTC,
+            'comment': 'Sniper Limit Entry',
+            'type_time': mt5.ORDER_TIME_SPECIFIED,
+            'expiration': expiration,
             'type_filling': mt5.ORDER_FILLING_IOC,
         }
         

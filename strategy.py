@@ -69,6 +69,7 @@ def detect_liquidity_engineering(df, level, current_trend):
     le_detected = False
     fmd = None
     choch_detected = False
+    choch_price = None
     
     for i in range(1, len(df)):
         curr = df.iloc[i]
@@ -85,6 +86,7 @@ def detect_liquidity_engineering(df, level, current_trend):
                 # Check for CHoCH: Price reverses and closes above previous high
                 if curr['close'] > prev['high']:
                     choch_detected = True
+                    choch_price = curr['close']
                     le_detected = True
                     break
                     
@@ -99,13 +101,14 @@ def detect_liquidity_engineering(df, level, current_trend):
                 # Check for CHoCH: Price reverses and closes below previous low
                 if curr['close'] < prev['low']:
                     choch_detected = True
+                    choch_price = curr['close']
                     le_detected = True
                     break
                     
     if le_detected:
-        return {"le_detected": True, "fmd": fmd, "choch": choch_detected}
+        return {"le_detected": True, "fmd": fmd, "choch": choch_detected, "choch_price": choch_price}
         
-    return {"le_detected": False, "fmd": None, "choch": False}
+    return {"le_detected": False, "fmd": None, "choch": False, "choch_price": None}
 
 def analyze_timeframe_coordination(constant_df, situational_df, current_trend):
     """
