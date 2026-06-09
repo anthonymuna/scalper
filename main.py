@@ -20,6 +20,41 @@ def get_df(symbol, tf, count=100):
     df['time'] = pd.to_datetime(df['time'], unit='s')
     return df
 
+def manage_open_positions():
+    positions = mt5.positions_get()
+    if positions:
+        for pos in positions:
+            # 1. Close if profit is $1.00 or more
+            if pos.profit >= 1.0:
+                close_position(pos, "Target Profit Reached")
+            # 2. Close if trade has been open for more than 5 minutes (300 seconds)
+            elif (time.time() - pos.time) > 300:
+                close_position(pos, "Time Limit Exceeded")
+                
+def close_position(pos, reason):
+    tick = mt5.symbol_info_tick(pos.symbol)
+    order_type = mt5.ORDER_TYPE_SELL if pos.type == mt5.ORDER_TYPE_BUY else mt5.ORDER_TYPE_BUY
+    price = tick.bid if order_type == mt5.ORDER_TYPE_SELL else tick.ask
+    
+    request = {
+        "action": mt5.TRADE_ACTION_DEAL,
+        "symbol": pos.symbol,
+        "volume": pos.volume,
+        "type": order_type,
+        "position": pos.ticket,
+        "price": price,
+        "deviation": 20,
+        "magic": MAGIC_NUMBER,
+        "comment": reason,
+        "type_time": mt5.ORDER_TIME_GTC,
+        "type_filling": mt5.ORDER_FILLING_IOC,
+    }
+    result = mt5.order_send(request)
+    if result and result.retcode == mt5.TRADE_RETCODE_DONE:
+        log(f"  -> [CLOSED] Position {pos.ticket} on {pos.symbol}. Reason: {reason}. Profit: ${pos.profit}")
+    else:
+        log(f"  -> [ERROR] Failed to close position {pos.ticket}. Retcode: {result.retcode if result else 'None'}")
+
 def run_bot_cycle():
     log(f"\n[{datetime.now()}] Starting analysis cycle...")
     
@@ -128,9 +163,10 @@ if __name__ == "__main__":
         print("Failed to initialize MT5")
         exit()
         
-    print("AOL Trading Bot Started.")
+    log("AOL Trading Bot Started. Aggressive High-Frequency Mode.")
     try:
         while True:
+            manage_open_positions()
             run_bot_cycle()
             log("Sleeping for 15 seconds for rapid scalping scan...")
             time.sleep(15)  # Wait 15 seconds for high-frequency scanning
