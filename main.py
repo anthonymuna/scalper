@@ -89,10 +89,17 @@ def run_bot_cycle():
         if lot < 0.01: 
             lot = 0.01
             
+        # Validate Limit Price vs Current Price to avoid Invalid Price error (10015)
+        # For a BUY LIMIT, the limit price must be below the Ask price.
+        # For a SELL LIMIT, the limit price must be above the Bid price.
+        if order_type == mt5.ORDER_TYPE_BUY_LIMIT and limit_price >= symbol_info.ask:
+            log(f"  -> Skipping {symbol}: Limit price {limit_price} is above current Ask {symbol_info.ask}")
+            continue
+        elif order_type == mt5.ORDER_TYPE_SELL_LIMIT and limit_price <= symbol_info.bid:
+            log(f"  -> Skipping {symbol}: Limit price {limit_price} is below current Bid {symbol_info.bid}")
+            continue
+            
         sl, tp = calculate_sl_tp(mt5.ORDER_TYPE_BUY if trend_direction == 'bullish' else mt5.ORDER_TYPE_SELL, limit_price, sl_points, tp_points, symbol_info)
-        
-        # Set expiration for 10 minutes in the future
-        expiration = int(time.time() + 600)
         
         request = {
             'action': mt5.TRADE_ACTION_PENDING,
@@ -105,8 +112,7 @@ def run_bot_cycle():
             'deviation': 20,
             'magic': MAGIC_NUMBER,
             'comment': 'Sniper Limit Entry',
-            'type_time': mt5.ORDER_TIME_SPECIFIED,
-            'expiration': expiration,
+            'type_time': mt5.ORDER_TIME_GTC,
             'type_filling': mt5.ORDER_FILLING_IOC,
         }
         
