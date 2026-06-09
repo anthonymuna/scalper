@@ -25,8 +25,7 @@ def manage_open_positions():
     if positions:
         for pos in positions:
             # 1. Close if trade is in any profit (Hyper-Scalping)
-            total_profit = pos.profit + pos.swap + pos.commission
-            if total_profit > 0.01:
+            if pos.profit > 0.05: # Slight buffer
                 close_position(pos, "Any Profit Reached")
             # 2. Close if trade has been open for more than 5 minutes (300 seconds)
             elif (time.time() - pos.time) > 300:
