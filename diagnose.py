@@ -1,16 +1,23 @@
 """Diagnose MT5 trading bot issues."""
+import os
 import MetaTrader5 as mt5
 import math
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()  # Load credentials from .env
 
 def main():
     if not mt5.initialize():
         print("FAIL: Cannot initialize MT5")
         return
 
-    LOGIN = 5054434
-    PASSWORD = "@!Form3South@"
-    SERVER = "Headway-Demo"
+    LOGIN = int(os.getenv("MT5_LOGIN", 0))
+    PASSWORD = os.getenv("MT5_PASSWORD", "")
+    SERVER = os.getenv("MT5_SERVER", "")
+    if not LOGIN or not PASSWORD or not SERVER:
+        print("ERROR: MT5 credentials missing from .env file")
+        return
     if not mt5.login(LOGIN, password=PASSWORD, server=SERVER):
         err = mt5.last_error()
         print(f"FAIL: Login failed: {err}")

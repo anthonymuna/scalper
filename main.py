@@ -1,9 +1,13 @@
 import time
+import os
 import MetaTrader5 as mt5
 import pandas as pd
 import numpy as np
 from datetime import datetime
 import math
+from dotenv import load_dotenv
+
+load_dotenv()  # Load credentials from .env
 
 from config import (
     SYMBOLS, TIMEFRAME_CYCLE, MAGIC_NUMBER,
@@ -421,10 +425,13 @@ if __name__ == "__main__":
         print("Failed to initialize MT5 library")
         exit()
     
-    # Login with provided credentials
-    LOGIN = 5054434
-    PASSWORD = "@!Form3South@"
-    SERVER = "Headway-Demo"
+    # Login with credentials from .env
+    LOGIN = int(os.getenv("MT5_LOGIN", 0))
+    PASSWORD = os.getenv("MT5_PASSWORD", "")
+    SERVER = os.getenv("MT5_SERVER", "")
+    if not LOGIN or not PASSWORD or not SERVER:
+        print("ERROR: MT5 credentials missing from .env file")
+        exit()
     if not mt5.login(LOGIN, password=PASSWORD, server=SERVER):
         err = mt5.last_error()
         print(f"MT5 login failed: {err}")
