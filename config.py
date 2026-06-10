@@ -10,75 +10,90 @@ load_dotenv()
 SYMBOLS = ["XAUUSD"]
 
 # ─────────────────────────────────────────────
-#  Timeframe Settings
+#  Timeframe Settings  (5M-only APA)
 # ─────────────────────────────────────────────
 TIMEFRAME_CYCLE = {
-    "constant":      mt5.TIMEFRAME_M15,   # Higher bias frame
-    "situational_1": mt5.TIMEFRAME_M5,    # Trend confirmation
-    "situational_2": mt5.TIMEFRAME_M1,    # Entry timing
+    "constant":      mt5.TIMEFRAME_M5,    # Trend bias (200 bars of M5)
+    "situational_1": mt5.TIMEFRAME_M5,    # Momentum / FVG confirmation
+    "situational_2": mt5.TIMEFRAME_M1,    # CHoCH entry trigger
     "entry":         mt5.TIMEFRAME_M1,
 }
 
 # ─────────────────────────────────────────────
-#  Risk Management
+#  Risk Management  — conservative compounding
 # ─────────────────────────────────────────────
-# For a $6 account we risk 15% per trade (aggressive compounding).
-# As balance grows the lot calculator automatically scales up.
-MAX_RISK_PERCENT        = 15.0   # % of balance risked per trade
+# Stage-based risk: bot uses MAX_RISK_PERCENT.
+# Manually increase as account grows:
+#   $0–$50   → 2%
+#   $50–$200 → 3%
+#   $200+    → 5%
+MAX_RISK_PERCENT        = 2.0    # % of balance risked per trade (START CONSERVATIVE)
 DEFAULT_LOT_SIZE        = 0.01   # Micro lot baseline (minimum)
-MAX_CONCURRENT_TRADES   = 1      # Only 1 trade at a time on a micro account
+MAX_CONCURRENT_TRADES   = 1      # Only 1 trade at a time
 
-# Daily hard-stop: if we lose this much of the STARTING daily balance, halt.
-MAX_DAILY_LOSS_PERCENT  = 25.0   # 25% daily drawdown limit
+# Daily hard-stop: halt if day's drawdown hits this %
+MAX_DAILY_LOSS_PERCENT  = 6.0    # 3× risk per trade = stop for the day
 
 # ─────────────────────────────────────────────
 #  SL / TP  (XAUUSD: 1 point = $0.01 per 0.01 lot)
 # ─────────────────────────────────────────────
-# XAUUSD spread is typically 350–450 points.  SL must clear the spread.
-MIN_SL_POINTS       = 500    # Absolute floor
-DEFAULT_SL_POINTS   = 700    # Starting SL (overridden by swing-based calc)
-TP_RATIO            = 2.0    # TP = 2× SL  (minimum 1:2 R:R for compounding)
+# Spread on XAUUSD is typically 350–450 points.
+MIN_SL_POINTS       = 400    # Absolute floor — must clear spread
+DEFAULT_SL_POINTS   = 600    # Fallback SL (swing-based overrides this)
+TP_RATIO            = 2.5    # TP = 2.5× SL — sniper entries deserve better RR
 
-# Partial close at 1:1 — close half the position, let the rest run
-PARTIAL_CLOSE_RATIO = 0.5    # Close 50 % of position at 1:1 R:R
+# Partial close at 1:1 R:R — bank 50%, let rest run to full TP
+PARTIAL_CLOSE_RATIO = 0.5
 
 # ─────────────────────────────────────────────
 #  Trailing Stop
 # ─────────────────────────────────────────────
-# Trailing activates once price is THIS MANY points in profit beyond entry.
-TRAILING_ACTIVATION_POINTS = 300   # Start trailing after +300 pts profit
-TRAILING_STEP_POINTS       = 150   # Trail SL by this distance behind price
+TRAILING_ACTIVATION_POINTS = 250   # Activate trail after +250pts profit
+TRAILING_STEP_POINTS       = 120   # Trail SL this many pts behind price
 
 # ─────────────────────────────────────────────
-#  Signal Quality Filter
+#  Signal Quality — SNIPER threshold
 # ─────────────────────────────────────────────
-MIN_SIGNAL_STRENGTH = 4      # Out of 7 — sniper threshold (was 2)
+MIN_SIGNAL_STRENGTH     = 5      # Raised from 4 → 5 (CHoCH now required for 5+)
+REQUIRE_CHOCH           = True   # Only enter on structural confirmation
 
-# Max spread allowed before refusing to enter (avoids news spikes)
-MAX_SPREAD_POINTS   = 600    # Skip trade if spread > 600 points
+# Max spread before skipping trade
+MAX_SPREAD_POINTS       = 500    # Tighter than before (was 600)
 
-# ATR settings for volatility filter (computed on M5, period 14)
-ATR_PERIOD          = 14
-ATR_MIN_POINTS      = 200    # Market too quiet below this — skip
-ATR_MAX_POINTS      = 2500   # Market too chaotic above this (news) — skip
+# ATR volatility gate (on M5, period 14)
+ATR_PERIOD              = 14
+ATR_MIN_POINTS          = 150    # Skip if market is dead
+ATR_MAX_POINTS          = 2000   # Skip during news spikes
 
 # ─────────────────────────────────────────────
-#  Session Filter  (all times in UTC/GMT)
+#  Killzone Filter  (UTC) — sniper windows only
 # ─────────────────────────────────────────────
-# Gold is most liquid and predictable during London + NY overlap.
-LONDON_SESSION_START    = 7    # 07:00 UTC
-LONDON_SESSION_END      = 16   # 16:00 UTC
-NY_SESSION_START        = 13   # 13:00 UTC
-NY_SESSION_END          = 20   # 20:00 UTC
+# London open killzone: 07:00–08:30 UTC
+LONDON_KZ_START     = 7
+LONDON_KZ_END       = 9     # hour only — minute handled in code
+
+# NY open killzone: 13:00–14:30 UTC
+NY_KZ_START         = 13
+NY_KZ_END           = 15
+
+# Legacy session bounds (used as outer guard)
+LONDON_SESSION_START    = 7
+LONDON_SESSION_END      = 16
+NY_SESSION_START        = 13
+NY_SESSION_END          = 20
+
+# ─────────────────────────────────────────────
+#  FVG Entry Settings
+# ─────────────────────────────────────────────
+USE_FVG_ENTRY           = True   # Wait for price to tap into FVG before entering
+FVG_LOOKBACK_BARS       = 10     # How many M5 bars back to search for FVG
+FVG_EXPIRY_BARS         = 5      # Cancel FVG order if not filled within N bars
 
 # ─────────────────────────────────────────────
 #  Profit Management
 # ─────────────────────────────────────────────
-# Scale profit target as a % of balance (compounds automatically).
-PROFIT_TARGET_PERCENT   = 8.0    # Close at 8 % profit of balance (per trade)
-
-# Hard time-limit: close losing trade after this many seconds
-TIME_LIMIT_SECONDS      = 600    # 10 minutes max in a losing trade
+PROFIT_TARGET_PERCENT   = 5.0    # Close at 5% profit of balance (per trade)
+TIME_LIMIT_SECONDS      = 900    # 15 min max in a losing trade (was 10)
 
 # ─────────────────────────────────────────────
 #  Bot Identification
@@ -88,10 +103,10 @@ MAGIC_NUMBER            = 123456
 # ─────────────────────────────────────────────
 #  Operational Settings
 # ─────────────────────────────────────────────
-SCAN_INTERVAL_SECONDS   = 10    # How often main loop ticks
+SCAN_INTERVAL_SECONDS   = 10
 DASHBOARD_PORT          = 5000
 
 # ─────────────────────────────────────────────
-#  Milestone alerts (USD balances to celebrate 🎯)
+#  Milestone alerts (USD balances)
 # ─────────────────────────────────────────────
 BALANCE_MILESTONES = [10, 20, 50, 100, 200, 500, 1000]

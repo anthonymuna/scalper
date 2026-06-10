@@ -35,6 +35,9 @@ from config import (
     PARTIAL_CLOSE_RATIO,
     LONDON_SESSION_START, LONDON_SESSION_END,
     NY_SESSION_START, NY_SESSION_END,
+    LONDON_KZ_START, LONDON_KZ_END,
+    NY_KZ_START, NY_KZ_END,
+    USE_FVG_ENTRY,
     BALANCE_MILESTONES,
 )
 from strategy import detect_scalp_signal, analyze_timeframe_coordination
@@ -134,11 +137,27 @@ def get_filling_type(symbol: str) -> int:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def is_trading_session() -> bool:
-    """Return True if we are within London or NY session (UTC)."""
+    """Return True if within London or NY session (broad outer guard)."""
     hour = datetime.now(timezone.utc).hour
     in_london = LONDON_SESSION_START <= hour < LONDON_SESSION_END
     in_ny     = NY_SESSION_START     <= hour < NY_SESSION_END
     return in_london or in_ny
+
+
+def is_killzone() -> bool:
+    """
+    Return True if we're in a high-probability killzone:
+      - London open:  07:00–09:00 UTC
+      - NY open:      13:00–15:00 UTC
+
+    Killzone trades get a bonus score point in detect_scalp_signal.
+    Trades outside killzones but inside session are still valid
+    if they score high enough without the bonus.
+    """
+    hour = datetime.now(timezone.utc).hour
+    in_london_kz = LONDON_KZ_START <= hour < LONDON_KZ_END
+    in_ny_kz     = NY_KZ_START     <= hour < NY_KZ_END
+    return in_london_kz or in_ny_kz
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -442,14 +461,30 @@ def place_trade(symbol: str, direction: str, signal_strength: int,
     digits  = symbol_info.digits
     spread  = (tick.ask - tick.bid) / point
 
-    # ── Entry price ───────────────────────────────────────────────────────
+    # ── Entry price — FVG tap or market ──────────────────────────────────
+    fvg = details.get("fvg")
+
     if direction == "bullish":
-        entry_price = tick.ask
         order_type  = mt5.ORDER_TYPE_BUY
+        if USE_FVG_ENTRY and fvg and fvg["type"] == "bullish_fvg":
+            # Wait for price to retrace into the FVG — place limit at mid
+            entry_price = round(fvg["mid"], digits)
+            use_limit   = True
+            log(f"     FVG entry: limit BUY @ {entry_price} "
+                f"(FVG {fvg['bottom']:.2f}–{fvg['top']:.2f})")
+        else:
+            entry_price = round(tick.ask, digits)
+            use_limit   = False
     else:
-        entry_price = tick.bid
         order_type  = mt5.ORDER_TYPE_SELL
-    entry_price = round(entry_price, digits)
+        if USE_FVG_ENTRY and fvg and fvg["type"] == "bearish_fvg":
+            entry_price = round(fvg["mid"], digits)
+            use_limit   = True
+            log(f"     FVG entry: limit SELL @ {entry_price} "
+                f"(FVG {fvg['bottom']:.2f}–{fvg['top']:.2f})")
+        else:
+            entry_price = round(tick.bid, digits)
+            use_limit   = False
 
     # ── SL from swing (sniper placement) ──────────────────────────────────
     swing_sl_price = details.get("swing_sl_price")
@@ -480,25 +515,45 @@ def place_trade(symbol: str, direction: str, signal_strength: int,
 
     filling = get_filling_type(symbol)
 
-    log(f"  -> Preparing {direction.upper()} order:")
+    log(f"  -> Preparing {direction.upper()} order "
+        f"({'LIMIT' if use_limit else 'MARKET'}):")
     log(f"     Entry={entry_price}  SL={sl_price}  TP={tp_price}")
     log(f"     Lot={lot}  Spread={spread:.0f}pts  SL={sl_points:.0f}pts  "
-        f"TP={tp_points:.0f}pts  Strength={signal_strength}/7")
+        f"TP={tp_points:.0f}pts  Strength={signal_strength}/8")
 
-    request = {
-        "action":       mt5.TRADE_ACTION_DEAL,
-        "symbol":       symbol,
-        "volume":       float(lot),
-        "type":         order_type,
-        "price":        entry_price,
-        "sl":           sl_price,
-        "tp":           tp_price,
-        "deviation":    20,
-        "magic":        MAGIC_NUMBER,
-        "comment":      f"APA {direction[:4]} s{signal_strength}",
-        "type_time":    mt5.ORDER_TIME_GTC,
-        "type_filling": filling,
-    }
+    if use_limit:
+        # Limit order — fills when price retraces to FVG
+        limit_order_type = (mt5.ORDER_TYPE_BUY_LIMIT  if direction == "bullish"
+                            else mt5.ORDER_TYPE_SELL_LIMIT)
+        request = {
+            "action":       mt5.TRADE_ACTION_PENDING,
+            "symbol":       symbol,
+            "volume":       float(lot),
+            "type":         limit_order_type,
+            "price":        entry_price,
+            "sl":           sl_price,
+            "tp":           tp_price,
+            "deviation":    20,
+            "magic":        MAGIC_NUMBER,
+            "comment":      f"APA {direction[:4]} FVG s{signal_strength}",
+            "type_time":    mt5.ORDER_TIME_GTC,
+            "type_filling": filling,
+        }
+    else:
+        request = {
+            "action":       mt5.TRADE_ACTION_DEAL,
+            "symbol":       symbol,
+            "volume":       float(lot),
+            "type":         order_type,
+            "price":        entry_price,
+            "sl":           sl_price,
+            "tp":           tp_price,
+            "deviation":    20,
+            "magic":        MAGIC_NUMBER,
+            "comment":      f"APA {direction[:4]} s{signal_strength}",
+            "type_time":    mt5.ORDER_TIME_GTC,
+            "type_filling": filling,
+        }
 
     # ── Pre-check ─────────────────────────────────────────────────────────
     check = mt5.order_check(request)
@@ -545,7 +600,7 @@ def place_trade(symbol: str, direction: str, signal_strength: int,
             f"🚀 *Trade Opened*\n"
             f"`{symbol}` {'🟢 BUY' if direction=='bullish' else '🔴 SELL'}\n"
             f"Entry: `{entry_price}`  SL: `{sl_price}`  TP: `{tp_price}`\n"
-            f"Lot: `{lot}`  Strength: `{signal_strength}/7`"
+            f"Lot: `{lot}`  Strength: `{signal_strength}/8`"
         )
         return True
     else:
@@ -616,41 +671,40 @@ def run_bot_cycle() -> None:
             log(f"  {symbol}: Spread too wide ({spread_pts:.0f} pts) — skipping")
             continue
 
-        # Fetch OHLCV
-        m15 = get_df(symbol, TIMEFRAME_CYCLE["constant"],      60)
-        m5  = get_df(symbol, TIMEFRAME_CYCLE["situational_1"], 100)
+        # Fetch OHLCV — 5M-only architecture
+        # 250 bars needed for EMA200 to be accurate
+        m5  = get_df(symbol, TIMEFRAME_CYCLE["situational_1"], 250)
         m1  = get_df(symbol, TIMEFRAME_CYCLE["situational_2"], 60)
 
         symbol_info = mt5.symbol_info(symbol)
-        if not symbol_info or m15 is None or m5 is None or m1 is None:
+        if not symbol_info or m5 is None or m1 is None:
             log(f"  {symbol}: Missing data — skipping")
             continue
 
-        symbol_data = {"m15": m15, "m5": m5, "m1": m1}
+        symbol_data = {"m5": m5, "m1": m1}
 
-        # Detect signal (new API: pass data dict + point + spread)
+        kz = is_killzone()
+        kz_label = " 🎯 KILLZONE" if kz else ""
+
+        # Detect signal — pass killzone flag for bonus scoring
         direction, strength, details = detect_scalp_signal(
-            symbol_data, symbol_info.point, spread_pts
+            symbol_data, symbol_info.point, spread_pts,
+            in_killzone=kz
         )
 
         if direction is None:
             reason = details.get("reason", "No signal")
-            log(f"  {symbol}: {reason}")
+            log(f"  {symbol}: {reason}{kz_label}")
             continue
 
-        log(f"  {symbol}: {direction.upper()} signal! "
-            f"Strength {strength}/7 | RSI={details.get('m5_rsi','?')} | "
-            f"CHoCH={details.get('choch',False)} | "
-            f"ATR={details.get('atr_points','?')}pts")
+        fvg      = details.get("fvg")
+        fvg_tag  = f" | FVG [{fvg['bottom']:.2f}–{fvg['top']:.2f}]" if fvg else " | No FVG"
 
-        # Optional: AOL bonus confirmation (doesn't block trade)
-        try:
-            coord = analyze_timeframe_coordination(m15, m5, direction)
-            if coord["aligned"]:
-                log(f"     AOL alignment @ {coord.get('aol_level','?')}")
-                strength = min(strength + 1, 7)
-        except Exception:
-            pass
+        log(f"  {symbol}: {direction.upper()} signal! "
+            f"Strength {strength}/8 | RSI={details.get('m5_rsi','?')} | "
+            f"CHoCH={details.get('choch',False)}"
+            f"{fvg_tag}{kz_label} | "
+            f"ATR={details.get('atr_points','?')}pts")
 
         if strength < MIN_SIGNAL_STRENGTH:
             log(f"  {symbol}: Strength {strength} below threshold {MIN_SIGNAL_STRENGTH}")
