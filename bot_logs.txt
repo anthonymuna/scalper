@@ -1,531 +1,1180 @@
 
-[2026-06-09 21:17:03.466327] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+============================================================
+XAUUSD Scalping Bot Started
+Account: 5054434 @ Headway-Demo
+Balance: $32.26 | Leverage: 1:1000
+Risk: 10% per trade | Max trades: 2
+SL: 800pts | TP ratio: 1.5x
+Profit target: $0.5 | Time limit: 300s
+Scan interval: 10s
+============================================================
 
-[2026-06-09 21:17:19.865187] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:16:30] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:17:36.038304] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:16:40] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:17:51.135933] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:16:50] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:18:06.217294] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:17:00] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:18:21.322997] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:17:10] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:18:36.423992] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:17:21] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:18:51.499365] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.51
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:17:31] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:19:06.573125] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:17:41] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:19:21.650491] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:17:51] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:19:36.722531] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:18:01] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:19:51.821247] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:18:11] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:20:06.968456] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:18:22] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:20:22.537052] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:18:32] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:20:38.057172] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:18:42] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:20:53.685624] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4236.72
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:18:52] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:21:09.201653] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4240.41
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:19:02] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:21:24.788833] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4240.41
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:19:13] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:21:40.434476] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4240.41
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:19:23] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:21:56.044465] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4240.41
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:19:33] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:22:11.593767] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4241.88
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:19:43] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:22:27.103112] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4241.88
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:19:53] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:22:42.816952] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4241.88
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:20:03] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:22:58.459825] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4241.88
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:20:14] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:23:14.012456] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4243.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:20:24] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:23:29.613076] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4243.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:20:34] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:23:45.155609] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4243.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:20:44] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:24:00.733258] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4244.91
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:20:54] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:24:16.309816] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4244.91
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:21:05] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:24:31.977976] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4244.91
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:21:15] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:25:07.614272] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4246.33
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:21:25] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:25:23.071216] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4246.33
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:21:35] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:25:38.548277] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4246.33
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:21:45] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:25:54.005513] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4246.33
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:21:56] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:26:09.466322] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:22:06] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:27:23.885501] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:22:16] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:27:39.412378] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:22:26] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:27:54.896713] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:22:36] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:28:10.402169] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:22:47] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:28:25.845747] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:22:57] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:28:41.292131] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:23:07] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:28:56.727241] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:23:17] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:29:12.200652] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-  -> Skipping GBPUSD: Limit price 1.33871 is below current Bid 1.33874
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:23:27] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:29:27.454585] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:23:38] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:29:42.905386] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:23:48] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:29:58.357879] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:23:58] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:30:13.821602] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-  -> Skipping GBPUSD: Limit price 1.33871 is below current Bid 1.3388499999999999
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:24:08] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:30:29.132273] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-  -> Skipping GBPUSD: Limit price 1.33871 is below current Bid 1.3388499999999999
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:24:18] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:30:44.452384] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-  -> Skipping GBPUSD: Limit price 1.33871 is below current Bid 1.33884
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:24:28] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:30:59.707202] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-  -> Skipping GBPUSD: Limit price 1.33871 is below current Bid 1.33878
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:24:39] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:31:14.957879] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-  -> Skipping GBPUSD: Limit price 1.33871 is below current Bid 1.33877
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:24:49] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10031 Request rejected due to absence of network connection
 
-[2026-06-09 21:31:30.236382] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-  -> Skipping GBPUSD: Limit price 1.33871 is below current Bid 1.33877
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:24:59] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:31:45.489689] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:25:09] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:32:00.936651] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:25:20] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:32:16.362569] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:25:30] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:32:31.924002] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
+[2026-06-10 00:25:40] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:32:47.396412] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4238.75
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
-AOL Trading Bot Started. Aggressive High-Frequency Mode.
+[2026-06-10 00:25:50] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
 
-[2026-06-09 21:33:09.401362] Starting analysis cycle...
-Analyzing GBPUSD...
-  -> SETUP DETECTED! Bearish alignment with LE on GBPUSD. FMD: 1.33886
-Analyzing XAUUSD...
-  -> SETUP DETECTED! Bullish alignment with LE on XAUUSD. FMD: 4239.79
-Analyzing US30...
-Skipping US30 due to missing data.
-Sleeping for 15 seconds for rapid scalping scan...
-AOL Trading Bot Started. Aggressive High-Frequency Mode.
+[2026-06-10 00:26:00] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:26:11] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:26:21] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:26:31] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:26:41] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:26:52] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:27:02] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:27:12] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:27:22] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:27:32] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:27:43] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:27:53] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:28:03] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:28:13] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:28:24] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:28:34] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:28:44] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:28:54] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:29:05] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:29:15] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:29:25] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:29:35] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:29:45] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:29:56] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:30:06] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:30:16] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:30:26] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:30:37] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:30:47] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:30:57] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:31:07] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:31:17] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:31:28] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:31:38] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:31:48] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:31:58] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:32:08] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:32:19] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:32:29] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:32:39] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:32:49] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:32:59] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:33:10] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:33:20] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:33:30] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:33:40] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:33:51] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:34:01] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:34:11] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:34:21] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:34:31] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:34:42] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:34:52] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:35:02] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:35:12] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:35:23] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:35:33] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:35:43] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:35:53] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:36:03] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
+
+[2026-06-10 00:36:14] === Scalp Scan ===
+  Balance: $32.26 | Equity: $32.26 | Free: $32.26
+  XAUUSD: BEARISH signal! Strength: 4/6
+     RSI: 47.4, EMA cross: True, M1 confirm: True
+     AOL alignment confirmed at 4261.86
+  -> Preparing BEARISH order:
+     Entry: 4258.78, SL: 4266.78, TP: 4246.78
+     Lot: 0.01, Spread: 363pts, SL: 800pts
+  -> [ERROR] Trade failed. Retcode: 10018 Market closed
