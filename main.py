@@ -1,29 +1,15 @@
 """
-main.py — NGAO Scalper Bot v3.0
+main.py — NGAO Scalper Bot v4.0
 ================================
-Pure Price Action | APA/SMC | Heiken Ashi Bias Layer
-Multi-Symbol: Headway (XAUUSD, EURUSD, GBPUSD, US100) +
-              Deriv Synthetics (Vol75, Vol25, Boom1000, Crash1000)
+Dual Engine: APA/SMC + ICT — run independently, both can fire trades.
 
-Signal Flow:
-  HA Daily + HA H4 → bias
-  H1 BOS/CHoCH + OB + FVG → structure and entry zone
-  M15 sweep → confirmation
-  M5 BOS + M1 CHoCH → sniper entry trigger
-  Confluence score ≥ 7/10 → trade fires
+APA Engine:  HA Daily/H4 bias → H1 OB/FVG → M15 sweep → M5 BOS → M1 CHoCH
+ICT Engine:  HA Daily/H4 bias → IPDA levels → AMD phase → Killzone →
+             OTE 0.62–0.79 → Breaker/Mitigation → Silver Bullet FVG
 
-Guardrails:
-  - Per-trade dynamic lot (balance-tiered risk%)
-  - Daily loss halt (tiered by balance)
-  - Weekly drawdown halt (10% — manual restart)
-  - Peak equity emergency stop (20% drop)
-  - Per-symbol: 3 trades/day, 30min gap, 2-loss session lock
-  - Max 3 concurrent trades, correlation filter
-  - Partial TPs: 30% @ 1:1, 40% @ 1:2, trail remainder
-  - Structure-based trailing SL (no ATR)
-  - Pending order expiry (3 candles)
-  - 2-hour max hold on real market symbols
-  - Startup reconciliation after reconnect/restart
+Both engines scan every symbol every M5 candle.
+Higher-scoring engine wins when both fire on same symbol same candle.
+All risk management, guardrails, and trade execution are shared.
 """
 
 import os
@@ -55,7 +41,12 @@ from config import (
 from strategy import (
     detect_scalp_signal,
     get_structure_trail_sl,
-    find_swing_low, find_swing_high,
+    get_ha_bias,
+)
+from ict_strategy import (
+    detect_ict_signal,
+    get_active_killzone,
+    ICT_MIN_SCORE,
 )
 from risk import (
     daily_tracker, weekly_tracker, peak_monitor, sym_tracker,
@@ -102,9 +93,9 @@ def log(msg: str) -> None:
 #  TELEGRAM — QUEUED AND BATCHED
 # ─────────────────────────────────────────────────────────────────────────────
 
-_tg_queue:     list = []
+_tg_queue:     list  = []
 _tg_last_sent: float = 0.0
-_tg_lock       = threading.Lock()
+_tg_lock              = threading.Lock()
 
 def tg_queue(msg: str) -> None:
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
@@ -125,7 +116,6 @@ def tg_flush() -> None:
         messages = list(_tg_queue)
         _tg_queue.clear()
     _tg_last_sent = now
-
     import urllib.request, urllib.parse
     for msg in messages:
         try:
@@ -145,19 +135,13 @@ def tg_flush() -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def get_session(symbol: str) -> str:
-    """Returns current active session or 'dead'."""
     if symbol in SYNTHETIC_SYMBOLS:
-        return "synthetic"   # Always active
-
+        return "synthetic"
     hour = datetime.now(timezone.utc).hour
-
-    # Dead zone between Asian close and London open
     if DEAD_ZONE_START <= hour < DEAD_ZONE_END:
         return "dead"
-
     in_london = LONDON_START <= hour < LONDON_END
     in_ny     = NY_START     <= hour < NY_END
-
     if symbol in ("XAUUSD", "XAUUSDm"):
         if in_london or in_ny:
             return "london_ny"
@@ -167,17 +151,12 @@ def get_session(symbol: str) -> str:
     if symbol in ("US100",):
         if in_ny:
             return "ny"
-
-    # Asian session for real markets — skip
     if ASIAN_START <= hour or hour < ASIAN_END:
         return "asian_skip"
-
     return "dead"
 
-
 def is_tradeable_session(symbol: str) -> bool:
-    session = get_session(symbol)
-    return session not in ("dead", "asian_skip")
+    return get_session(symbol) not in ("dead", "asian_skip")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -191,10 +170,9 @@ def get_spread_points(symbol: str) -> float:
         return 9999.0
     return (tick.ask - tick.bid) / info.point
 
-
 def passes_spread_filter(symbol: str) -> bool:
     if symbol in SYNTHETIC_SYMBOLS:
-        return True   # Synthetics have fixed minimal spread
+        return True
     max_spread = SYMBOL_MAX_SPREAD.get(symbol, 100)
     if max_spread == 0:
         return True
@@ -206,26 +184,18 @@ def passes_spread_filter(symbol: str) -> bool:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def passes_correlation_filter(symbol: str, direction: int) -> bool:
-    """
-    EURUSD and GBPUSD are ~85% correlated.
-    Don't open same-direction trade on both simultaneously.
-    """
-    is_usd_pair = any(x in symbol for x in ["EUR", "GBP"])
-    if not is_usd_pair:
+    is_usd = any(x in symbol for x in ["EUR", "GBP"])
+    if not is_usd:
         return True
-
     positions = mt5.positions_get()
     if not positions:
         return True
-
     for p in positions:
         if p.magic != MAGIC_NUMBER:
             continue
-        open_sym = p.symbol
         open_dir = 1 if p.type == mt5.ORDER_TYPE_BUY else -1
-        if any(x in open_sym for x in ["EUR", "GBP"]) and open_dir == direction:
+        if any(x in p.symbol for x in ["EUR", "GBP"]) and open_dir == direction:
             return False
-
     return True
 
 
@@ -241,9 +211,7 @@ def get_df(symbol: str, tf: int, count: int) -> pd.DataFrame | None:
     df["time"] = pd.to_datetime(df["time"], unit="s")
     return df
 
-
 def fetch_all_timeframes(symbol: str) -> dict | None:
-    """Fetch all required timeframes in one go."""
     mt5.symbol_select(symbol, True)
     data = {}
     specs = [
@@ -270,33 +238,25 @@ def fetch_all_timeframes(symbol: str) -> dict | None:
 _tp1_done: set = set()
 _tp2_done: set = set()
 
-
 def close_partial(ticket: int, percent: float, symbol: str) -> bool:
-    """Close `percent`% of a position by ticket."""
     pos = mt5.positions_get(ticket=ticket)
     if not pos:
         return False
-
     total_vol = pos[0].volume
     close_vol = round(total_vol * percent / 100.0, 2)
-
-    sym_info = mt5.symbol_info(symbol)
+    sym_info  = mt5.symbol_info(symbol)
     if not sym_info:
         return False
-
     vol_min  = sym_info.volume_min
     vol_step = sym_info.volume_step
     close_vol = max(vol_min, close_vol)
     close_vol = round(round(close_vol / vol_step) * vol_step, 2)
-
     if close_vol >= total_vol:
-        return False   # Would close entire position — let TP handle it
-
+        return False
     order_type = (mt5.ORDER_TYPE_SELL if pos[0].type == mt5.ORDER_TYPE_BUY
                   else mt5.ORDER_TYPE_BUY)
     tick  = mt5.symbol_info_tick(symbol)
     price = tick.bid if order_type == mt5.ORDER_TYPE_SELL else tick.ask
-
     request = {
         "action":       mt5.TRADE_ACTION_DEAL,
         "symbol":       symbol,
@@ -328,8 +288,6 @@ def close_position(pos, reason: str) -> bool:
     order_type = (mt5.ORDER_TYPE_SELL if pos.type == mt5.ORDER_TYPE_BUY
                   else mt5.ORDER_TYPE_BUY)
     price   = tick.bid if order_type == mt5.ORDER_TYPE_SELL else tick.ask
-    filling = get_filling_type(pos.symbol)
-
     request = {
         "action":       mt5.TRADE_ACTION_DEAL,
         "symbol":       pos.symbol,
@@ -341,14 +299,13 @@ def close_position(pos, reason: str) -> bool:
         "magic":        MAGIC_NUMBER,
         "comment":      reason[:31],
         "type_time":    mt5.ORDER_TIME_GTC,
-        "type_filling": filling,
+        "type_filling": get_filling_type(pos.symbol),
     }
     result = mt5.order_send(request)
     ok = result and result.retcode == mt5.TRADE_RETCODE_DONE
     if ok:
         log(f"  Closed #{pos.ticket} {pos.symbol} | {reason}")
     return ok
-
 
 def close_all_positions(reason: str = "Emergency") -> None:
     positions = mt5.positions_get()
@@ -360,7 +317,7 @@ def close_all_positions(reason: str = "Emergency") -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  MANAGE OPEN POSITIONS — Partials, Trail, Time Exit
+#  MANAGE OPEN POSITIONS
 # ─────────────────────────────────────────────────────────────────────────────
 
 def manage_open_positions() -> None:
@@ -372,12 +329,12 @@ def manage_open_positions() -> None:
         if pos.magic != MAGIC_NUMBER:
             continue
 
-        symbol    = pos.symbol
-        ticket    = pos.ticket
-        direction = 1 if pos.type == mt5.ORDER_TYPE_BUY else -1
-        open_price= pos.price_open
-        current_sl= pos.sl
-        sl_dist   = abs(open_price - current_sl)
+        symbol     = pos.symbol
+        ticket     = pos.ticket
+        direction  = 1 if pos.type == mt5.ORDER_TYPE_BUY else -1
+        open_price = pos.price_open
+        current_sl = pos.sl
+        sl_dist    = abs(open_price - current_sl)
 
         sym_info = mt5.symbol_info(symbol)
         if not sym_info:
@@ -385,8 +342,7 @@ def manage_open_positions() -> None:
 
         point  = sym_info.point
         digits = sym_info.digits
-
-        tick = mt5.symbol_info_tick(symbol)
+        tick   = mt5.symbol_info_tick(symbol)
         if not tick:
             continue
 
@@ -405,74 +361,64 @@ def manage_open_positions() -> None:
 
         # ── TP1: close 30% + breakeven ───────────────────────────────────
         if rr >= TP1_RR and ticket not in _tp1_done:
-            closed = close_partial(ticket, TP1_PCT, symbol)
-            if closed:
+            if close_partial(ticket, TP1_PCT, symbol):
                 _tp1_done.add(ticket)
                 tg_queue(f"✅ TP1: {symbol} | 30% closed | RR 1:1")
-
-            # Move SL to breakeven
-            new_sl = round(open_price, digits)
             stop_level = sym_info.trade_stops_level * point
-            be_ok = (direction == 1 and new_sl > current_sl and
-                     current_price - new_sl > stop_level)
-            be_ok = be_ok or (direction == -1 and new_sl < current_sl and
-                              new_sl - current_price > stop_level)
+            new_sl     = round(open_price, digits)
+            be_ok = (
+                (direction ==  1 and new_sl > current_sl and
+                 current_price - new_sl > stop_level) or
+                (direction == -1 and new_sl < current_sl and
+                 new_sl - current_price > stop_level)
+            )
             if be_ok:
-                req = {
+                mt5.order_send({
                     "action":   mt5.TRADE_ACTION_SLTP,
                     "symbol":   symbol,
                     "position": ticket,
                     "sl":       new_sl,
                     "tp":       pos.tp,
-                }
-                mt5.order_send(req)
+                })
 
         # ── TP2: close 40% ───────────────────────────────────────────────
         if rr >= TP2_RR and ticket not in _tp2_done:
-            closed = close_partial(ticket, TP2_PCT, symbol)
-            if closed:
+            if close_partial(ticket, TP2_PCT, symbol):
                 _tp2_done.add(ticket)
                 tg_queue(f"✅ TP2: {symbol} | 40% closed | RR 1:2")
 
-        # ── STRUCTURAL TRAILING STOP (after TP2) ─────────────────────────
+        # ── STRUCTURE TRAILING STOP (after TP2) ──────────────────────────
         if rr >= TP2_RR:
             df_m5 = get_df(symbol, TF_M5, 20)
             if df_m5 is not None:
-                trail_sl = get_structure_trail_sl(df_m5, direction)
-                if trail_sl > 0:
-                    stop_level = sym_info.trade_stops_level * point
-                    freeze_level = sym_info.trade_freeze_level * point
+                trail_sl     = get_structure_trail_sl(df_m5, direction)
+                stop_level   = sym_info.trade_stops_level * point
+                freeze_level = sym_info.trade_freeze_level * point
+                near_freeze  = abs(current_price - current_sl) <= freeze_level
+                if trail_sl > 0 and not near_freeze:
+                    trail_valid = (
+                        (direction ==  1 and trail_sl > current_sl and
+                         current_price - trail_sl > stop_level) or
+                        (direction == -1 and trail_sl < current_sl and
+                         trail_sl - current_price > stop_level)
+                    )
+                    if trail_valid:
+                        mt5.order_send({
+                            "action":   mt5.TRADE_ACTION_SLTP,
+                            "symbol":   symbol,
+                            "position": ticket,
+                            "sl":       round(trail_sl, digits),
+                            "tp":       pos.tp,
+                        })
 
-                    # Skip if within freeze level
-                    near_sl = abs(current_price - current_sl) <= freeze_level
-                    if not near_sl:
-                        trail_valid = (
-                            (direction == 1 and
-                             trail_sl > current_sl and
-                             current_price - trail_sl > stop_level)
-                            or
-                            (direction == -1 and
-                             trail_sl < current_sl and
-                             trail_sl - current_price > stop_level)
-                        )
-                        if trail_valid:
-                            req = {
-                                "action":   mt5.TRADE_ACTION_SLTP,
-                                "symbol":   symbol,
-                                "position": ticket,
-                                "sl":       round(trail_sl, digits),
-                                "tp":       pos.tp,
-                            }
-                            mt5.order_send(req)
-
-        # ── CHoCH EXIT — structure flips against us ───────────────────────
+        # ── CHoCH EXIT ────────────────────────────────────────────────────
         if rr > 0.5:
             df_m5 = get_df(symbol, TF_M5, 20)
             if df_m5 is not None:
                 from strategy import detect_bos_choch
-                m5_struct = detect_bos_choch(df_m5, lookback=10)
-                flip = (direction == 1 and m5_struct["choch_bear"]) or \
-                       (direction == -1 and m5_struct["choch_bull"])
+                m5s  = detect_bos_choch(df_m5, lookback=10)
+                flip = ((direction ==  1 and m5s["choch_bear"]) or
+                        (direction == -1 and m5s["choch_bull"]))
                 if flip:
                     if close_position(pos, "CHoCH flip"):
                         tg_queue(f"🔄 CHoCH EXIT: {symbol} | RR: {rr:.2f}")
@@ -494,93 +440,116 @@ def manage_pending_orders() -> None:
             continue
         _pending_candle_count[order.ticket] += 1
         if _pending_candle_count[order.ticket] >= ORDER_EXPIRY_BARS:
-            req = {
+            result = mt5.order_send({
                 "action": mt5.TRADE_ACTION_REMOVE,
                 "order":  order.ticket,
-            }
-            result = mt5.order_send(req)
+            })
             if result and result.retcode == mt5.TRADE_RETCODE_DONE:
                 log(f"  Expired pending #{order.ticket} {order.symbol}")
                 del _pending_candle_count[order.ticket]
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  PLACE TRADE
+#  PLACE TRADE — shared by both engines
 # ─────────────────────────────────────────────────────────────────────────────
 
 def place_trade(symbol: str, direction: int, score: float,
-                details: dict) -> bool:
+                details: dict, engine: str = "APA") -> bool:
     sym_info = mt5.symbol_info(symbol)
     if not sym_info:
-        log(f"  {symbol}: Cannot get symbol info")
         return False
-
     tick = mt5.symbol_info_tick(symbol)
     if not tick:
-        log(f"  {symbol}: No tick data")
         return False
-
     if sym_info.trade_mode != mt5.SYMBOL_TRADE_MODE_FULL:
-        log(f"  {symbol}: Not in FULL trade mode")
         return False
 
-    point   = sym_info.point
-    digits  = sym_info.digits
-    filling = get_filling_type(symbol)
-
+    point    = sym_info.point
+    digits   = sym_info.digits
+    filling  = get_filling_type(symbol)
     order_type = mt5.ORDER_TYPE_BUY if direction == 1 else mt5.ORDER_TYPE_SELL
 
-    # ── Entry price: OB midpoint (limit) or market ────────────────────────
-    ob  = details.get("ob")
-    fvg = details.get("fvg")
-
+    # ── Entry price resolution ────────────────────────────────────────────
+    # ICT engine provides entry_zone; APA engine provides ob/fvg
     use_limit   = False
     entry_price = round(tick.ask if direction == 1 else tick.bid, digits)
 
-    if ob and not ob.get("mitigated"):
-        entry_price = round(ob["mid"], digits)
-        use_limit   = True
-    elif fvg and not fvg.get("filled"):
-        entry_price = round(fvg["mid"], digits)
-        use_limit   = True
+    if engine == "ICT":
+        ez = details.get("entry_zone")
+        if ez:
+            entry_price = round(ez["mid"], digits)
+            use_limit   = True
+    else:
+        ob  = details.get("ob")
+        fvg = details.get("fvg")
+        if ob and not ob.get("mitigated"):
+            entry_price = round(ob["mid"], digits)
+            use_limit   = True
+        elif fvg and not fvg.get("filled"):
+            entry_price = round(fvg["mid"], digits)
+            use_limit   = True
 
-    # Validate limit entry is below/above current price
+    # Validate limit price vs current
     if use_limit:
         if direction == 1 and entry_price >= tick.ask:
             entry_price = round(tick.ask, digits)
-            use_limit = False
+            use_limit   = False
         if direction == -1 and entry_price <= tick.bid:
             entry_price = round(tick.bid, digits)
-            use_limit = False
+            use_limit   = False
 
-    # ── SL from swing ─────────────────────────────────────────────────────
-    swing_sl = details.get("swing_sl", 0.0)
+    # ── SL calculation ────────────────────────────────────────────────────
+    # ICT: prefer manipulation extreme as SL anchor
+    # APA: prefer swing low/high
+    swing_sl   = 0.0
+    sl_price   = None
+
+    if engine == "ICT":
+        manip_sl = details.get("manip_sl", 0.0)
+        if manip_sl and manip_sl > 0:
+            swing_sl = manip_sl
+    else:
+        swing_sl = details.get("swing_sl", 0.0)
+
     if swing_sl and swing_sl > 0:
         sl_price, sl_points = sl_from_swing(order_type, entry_price,
                                              swing_sl, sym_info, symbol)
     else:
         sl_points = max(DEFAULT_SL_POINTS, MIN_SL_POINTS)
-        sl_price  = None
 
     sl_points = max(sl_points, MIN_SL_POINTS)
+
+    # Check minimum stop level
+    stop_level_pts = sym_info.trade_stops_level
+    min_sl_pts     = stop_level_pts * 1.2
+    if sl_points < min_sl_pts:
+        sl_points = min_sl_pts
 
     # ── Lot size ──────────────────────────────────────────────────────────
     lot = calculate_lot_size(symbol, sl_points, score)
     lot = max(lot, sym_info.volume_min)
 
-    # ── TP at 1:3 RR (remainder after partials runs here) ─────────────────
-    tp_ratio   = 3.0
+    # ── TP at 1:3 for remainder after partials ────────────────────────────
+    # If ICT has IPDA level, use that as TP3 target
+    ipda_tp_level = details.get("ipda_tp_level", 0.0)
     sl_calc, tp_price = calculate_sl_tp(order_type, entry_price,
-                                         sl_points, tp_ratio, sym_info)
+                                         sl_points, 3.0, sym_info)
     if sl_price is None:
         sl_price = sl_calc
 
-    # ── Validate stop levels ──────────────────────────────────────────────
+    # Override TP with IPDA draw level if provided and valid
+    if ipda_tp_level > 0:
+        if direction == 1 and ipda_tp_level > entry_price:
+            tp_price = round(ipda_tp_level, digits)
+        elif direction == -1 and ipda_tp_level < entry_price:
+            tp_price = round(ipda_tp_level, digits)
+
+    # Validate SL/TP against broker stop levels
     sl_price, tp_price = validate_sl_tp(symbol, entry_price,
                                          sl_price, tp_price,
                                          order_type, sym_info)
 
-    # ── Max slippage per symbol type ──────────────────────────────────────
+    # Slippage by symbol type
     if symbol in SYNTHETIC_SYMBOLS:
         deviation = 30
     elif "XAU" in symbol or "Gold" in symbol:
@@ -588,93 +557,66 @@ def place_trade(symbol: str, direction: int, score: float,
     else:
         deviation = 50
 
-    comment = (f"NGAO {'B' if direction==1 else 'S'} "
-               f"s{score:.0f} {'L' if use_limit else 'M'}")
+    comment = (f"NGAO-{engine} {'B' if direction==1 else 'S'} "
+               f"s{score:.0f}")
 
-    if use_limit:
-        ltype = mt5.ORDER_TYPE_BUY_LIMIT if direction == 1 \
-                else mt5.ORDER_TYPE_SELL_LIMIT
-        request = {
-            "action":       mt5.TRADE_ACTION_PENDING,
-            "symbol":       symbol,
-            "volume":       float(lot),
-            "type":         ltype,
-            "price":        entry_price,
-            "sl":           sl_price,
-            "tp":           tp_price,
-            "deviation":    deviation,
-            "magic":        MAGIC_NUMBER,
-            "comment":      comment,
-            "type_time":    mt5.ORDER_TIME_GTC,
-            "type_filling": filling,
-        }
-    else:
-        request = {
-            "action":       mt5.TRADE_ACTION_DEAL,
-            "symbol":       symbol,
-            "volume":       float(lot),
-            "type":         order_type,
-            "price":        entry_price,
-            "sl":           sl_price,
-            "tp":           tp_price,
-            "deviation":    deviation,
-            "magic":        MAGIC_NUMBER,
-            "comment":      comment,
-            "type_time":    mt5.ORDER_TIME_GTC,
-            "type_filling": filling,
-        }
+    ltype = (mt5.ORDER_TYPE_BUY_LIMIT if direction == 1
+             else mt5.ORDER_TYPE_SELL_LIMIT)
 
-    # ── Pre-check ─────────────────────────────────────────────────────────
+    request = {
+        "action":       mt5.TRADE_ACTION_PENDING if use_limit else mt5.TRADE_ACTION_DEAL,
+        "symbol":       symbol,
+        "volume":       float(lot),
+        "type":         ltype if use_limit else order_type,
+        "price":        entry_price,
+        "sl":           sl_price,
+        "tp":           tp_price,
+        "deviation":    deviation,
+        "magic":        MAGIC_NUMBER,
+        "comment":      comment,
+        "type_time":    mt5.ORDER_TIME_GTC,
+        "type_filling": filling,
+    }
+
+    # Pre-check
     check = mt5.order_check(request)
-    if check is None:
-        log(f"  {symbol}: order_check returned None. {mt5.last_error()}")
-        return False
-
-    if check.retcode != 0:
-        log(f"  {symbol}: Check fail {check.retcode} — {check.comment}")
-        if check.retcode == 10016:   # Invalid stops
-            sl_points = max(sl_points * 1.5, MIN_SL_POINTS)
-            sl_price, tp_price = calculate_sl_tp(order_type, entry_price,
-                                                  sl_points, tp_ratio, sym_info)
-            request["sl"] = sl_price
+    if check is None or check.retcode != 0:
+        rc = check.retcode if check else "None"
+        log(f"  {symbol} [{engine}]: Check fail {rc}")
+        if check and check.retcode == 10016:
+            sl_points *= 1.5
+            sl_calc, tp_price = calculate_sl_tp(order_type, entry_price,
+                                                 sl_points, 3.0, sym_info)
+            request["sl"] = sl_calc
             request["tp"] = tp_price
             check = mt5.order_check(request)
             if check is None or check.retcode != 0:
-                log(f"  {symbol}: Still failing after SL widening")
                 return False
-        elif check.retcode == 10019:  # Not enough margin
-            request["volume"] = float(sym_info.volume_min)
-            check = mt5.order_check(request)
-            if check is None or check.retcode != 0:
-                log(f"  {symbol}: Not enough margin for min lot")
-                return False
-        elif check.retcode == 10018:
-            log(f"  {symbol}: Market closed")
-            return False
         else:
             return False
 
-    # ── Send ──────────────────────────────────────────────────────────────
     result = mt5.order_send(request)
     if result and result.retcode == mt5.TRADE_RETCODE_DONE:
-        log(f"  ✅ {symbol} {'BUY' if direction==1 else 'SELL'} "
-            f"{'LIMIT' if use_limit else 'MKT'} "
+        emoji = "🟢" if direction == 1 else "🔴"
+        side  = "BUY"  if direction == 1 else "SELL"
+        mode  = "LIMIT" if use_limit else "MKT"
+        log(f"  ✅ [{engine}] {symbol} {side} {mode} "
             f"@ {entry_price} SL={sl_price} TP={tp_price} "
             f"Lot={lot} Score={score:.1f}")
         tg_queue(
-            f"{'🟢' if direction==1 else '🔴'} <b>NGAO TRADE</b>\n"
-            f"<b>{symbol}</b> {'BUY' if direction==1 else 'SELL'} "
-            f"{'(LIMIT)' if use_limit else '(MARKET)'}\n"
+            f"{emoji} <b>NGAO-{engine}</b>\n"
+            f"<b>{symbol}</b> {side} ({mode})\n"
             f"Entry: <code>{entry_price}</code>\n"
-            f"SL: <code>{sl_price}</code>\n"
-            f"TP: <code>{tp_price}</code>\n"
-            f"Lot: <code>{lot}</code>  Score: <code>{score:.1f}/10</code>"
+            f"SL:    <code>{sl_price}</code>\n"
+            f"TP:    <code>{tp_price}</code>\n"
+            f"Lot:   <code>{lot}</code>  "
+            f"Score: <code>{score:.1f}/10</code>"
         )
         sym_tracker.record_entry(symbol)
         return True
 
-    rc  = result.retcode if result else "None"
-    log(f"  ❌ {symbol}: Send failed retcode={rc}")
+    rc = result.retcode if result else "None"
+    log(f"  ❌ [{engine}] {symbol}: retcode={rc}")
     return False
 
 
@@ -689,8 +631,8 @@ def reconcile_on_startup() -> None:
         for p in positions:
             if p.magic == MAGIC_NUMBER:
                 sym_tracker.record_entry(p.symbol)
-                log(f"  Reconciled: {p.symbol} #{p.ticket} P/L={p.profit:.2f}")
-
+                log(f"  Reconciled: {p.symbol} #{p.ticket} "
+                    f"P/L={p.profit:.2f}")
     orders = mt5.orders_get()
     if orders:
         for o in orders:
@@ -699,7 +641,7 @@ def reconcile_on_startup() -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  MILESTONE TRACKER
+#  MILESTONE + DAILY REPORT
 # ─────────────────────────────────────────────────────────────────────────────
 
 _hit_milestones: set = set()
@@ -709,13 +651,7 @@ def check_milestones(balance: float) -> None:
         if balance >= m and m not in _hit_milestones:
             _hit_milestones.add(m)
             msg = f"🎯 MILESTONE: ${m:.0f} reached! Balance: ${balance:.2f}"
-            log(msg)
-            tg_queue(msg)
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-#  DAILY PERFORMANCE REPORT
-# ─────────────────────────────────────────────────────────────────────────────
+            log(msg); tg_queue(msg)
 
 _last_report_day: str = ""
 
@@ -725,79 +661,68 @@ def maybe_send_daily_report(balance: float) -> None:
     if today == _last_report_day:
         return
     _last_report_day = today
-
     pnl     = daily_tracker.daily_pnl(balance)
     pnl_pct = (pnl / daily_tracker.day_start_balance * 100.0
                if daily_tracker.day_start_balance > 0 else 0)
-    risk    = get_risk_percent(balance)
-
     tg_queue(
         f"📅 <b>DAILY REPORT</b>\n"
         f"Start: ${daily_tracker.day_start_balance:.2f}\n"
-        f"Now: ${balance:.2f}\n"
-        f"P/L: ${pnl:.2f} ({pnl_pct:+.1f}%)\n"
-        f"Risk tier: {risk}%/trade\n"
-        f"Peak: ${peak_monitor.peak:.2f}"
+        f"Now:   ${balance:.2f}\n"
+        f"P/L:   ${pnl:.2f} ({pnl_pct:+.1f}%)\n"
+        f"Risk:  {get_risk_percent(balance)}%/trade\n"
+        f"Peak:  ${peak_monitor.peak:.2f}"
     )
     tg_flush()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  MAIN SCAN CYCLE
+#  MAIN SCAN CYCLE — DUAL ENGINE
 # ─────────────────────────────────────────────────────────────────────────────
 
 def run_scan_cycle() -> None:
-    log("\n=== NGAO Scan ===")
+    log("\n=== NGAO Dual-Engine Scan ===")
 
     acc = mt5.account_info()
     if not acc:
-        log("  [ERROR] No account info")
-        return
+        log("  [ERROR] No account info"); return
 
     balance = acc.balance
     equity  = acc.equity
 
     log(f"  Balance=${balance:.2f}  Equity=${equity:.2f}  "
-        f"Free=${acc.margin_free:.2f}  Risk={get_risk_percent(balance)}%")
+        f"Risk={get_risk_percent(balance)}%  "
+        f"KZ={get_active_killzone()[0] or 'none'}")
 
     # ── Update trackers ───────────────────────────────────────────────────
     daily_tracker.update(balance)
     weekly_tracker.update(equity)
     peak_monitor.update(equity)
 
-    # ── LEVEL 6: Peak equity emergency ───────────────────────────────────
+    # ── Guardrails ────────────────────────────────────────────────────────
     if peak_monitor.is_emergency(equity):
-        log("  🚨 EMERGENCY: Peak equity drop exceeded. Closing all.")
+        log("  🚨 EMERGENCY: Peak drop exceeded.")
         close_all_positions("Emergency peak drop")
-        tg_queue(f"🚨 <b>EMERGENCY STOP</b>\n"
-                 f"Peak: ${peak_monitor.peak:.2f}\n"
-                 f"Now: ${equity:.2f}")
-        set_state("STOPPED")
-        return
+        tg_queue(f"🚨 <b>EMERGENCY STOP</b>\nPeak: ${peak_monitor.peak:.2f} "
+                 f"→ Now: ${equity:.2f}")
+        set_state("STOPPED"); return
 
-    # ── LEVEL 4: Weekly halt ──────────────────────────────────────────────
     if weekly_tracker.is_limit_hit(equity):
-        log("  ⛔ Weekly drawdown limit hit. Halting until manual reset.")
-        tg_queue(f"⛔ <b>WEEKLY HALT</b>\n"
-                 f"Drawdown limit reached.\nManual restart required.")
-        set_state("PAUSED")
-        return
+        log("  ⛔ Weekly drawdown limit hit.")
+        tg_queue("⛔ <b>WEEKLY HALT</b>\nManual restart required.")
+        set_state("PAUSED"); return
 
-    # ── LEVEL 3: Daily halt ───────────────────────────────────────────────
     if daily_tracker.is_limit_hit(balance):
-        log("  🛑 Daily loss limit hit. Pausing until tomorrow.")
-        tg_queue(f"🛑 <b>DAILY HALT</b>\nLoss limit reached. Resuming tomorrow.")
-        set_state("PAUSED")
-        return
+        log("  🛑 Daily loss limit hit.")
+        tg_queue("🛑 <b>DAILY HALT</b>\nResumes tomorrow.")
+        set_state("PAUSED"); return
 
     check_milestones(balance)
     maybe_send_daily_report(balance)
 
-    # ── Manage existing positions ─────────────────────────────────────────
+    # ── Position management ───────────────────────────────────────────────
     manage_open_positions()
     manage_pending_orders()
 
-    # ── Count open positions ──────────────────────────────────────────────
     open_count = sum(
         1 for p in (mt5.positions_get() or [])
         if p.magic == MAGIC_NUMBER
@@ -806,32 +731,29 @@ def run_scan_cycle() -> None:
         log(f"  Max trades ({MAX_CONCURRENT_TRADES}) active — skipping scan")
         return
 
-    # ── Scan + score all symbols ──────────────────────────────────────────
-    setups = []
+    # ── DUAL ENGINE SCAN ─────────────────────────────────────────────────
+    # Each symbol gets scored by both engines.
+    # Structure: {symbol: {"APA": (dir, score, details),
+    #                      "ICT": (dir, score, details)}}
+
+    all_setups: list[tuple] = []
+    # each entry: (symbol, direction, score, details, engine_name)
 
     for symbol in SYMBOLS:
         if not mt5.symbol_select(symbol, True):
             continue
-
         if not is_tradeable_session(symbol):
             continue
-
         if not passes_spread_filter(symbol):
-            log(f"  {symbol}: Spread too wide")
             continue
-
         can, reason = sym_tracker.can_trade(symbol)
         if not can:
-            log(f"  {symbol}: {reason}")
-            continue
-
-        # Check no existing position on this symbol
+            log(f"  {symbol}: {reason}"); continue
         existing = [p for p in (mt5.positions_get(symbol=symbol) or [])
                     if p.magic == MAGIC_NUMBER]
         if existing:
             continue
 
-        # Fetch data
         data = fetch_all_timeframes(symbol)
         if not data:
             continue
@@ -842,64 +764,91 @@ def run_scan_cycle() -> None:
 
         spread_pts = get_spread_points(symbol)
 
-        direction, score, details = detect_scalp_signal(
+        # Pre-compute HA bias once — shared by both engines
+        ha_daily = get_ha_bias(data["d1"])
+        ha_h4    = get_ha_bias(data["h4"])
+
+        # ── APA ENGINE ───────────────────────────────────────────────────
+        apa_dir, apa_score, apa_details = detect_scalp_signal(
             symbol, data, sym_info.point, spread_pts
         )
+        if apa_dir != 0 and apa_score >= MIN_SIGNAL_SCORE_HALF:
+            log(f"  [APA] {symbol}: {'BUY' if apa_dir==1 else 'SELL'} "
+                f"Score={apa_score:.1f} | "
+                f"OB={'✓' if apa_details.get('ob') else '✗'} "
+                f"FVG={'✓' if apa_details.get('fvg') else '✗'} "
+                f"Sweep={'✓' if apa_details.get('sweep_m15') else '✗'} "
+                f"CHoCH={'✓' if apa_details.get('m1_choch') else '✗'}")
+            all_setups.append((symbol, apa_dir, apa_score, apa_details, "APA"))
+        else:
+            reason = apa_details.get("reason", f"Score {apa_score:.1f}")
+            log(f"  [APA] {symbol}: {reason}")
 
-        if direction == 0 or score < MIN_SIGNAL_SCORE_HALF:
-            reason = details.get("reason", f"Score {score:.1f}")
-            log(f"  {symbol}: {reason}")
-            continue
+        # ── ICT ENGINE ───────────────────────────────────────────────────
+        ict_dir, ict_score, ict_details = detect_ict_signal(
+            symbol, data, sym_info.point, ha_daily, ha_h4
+        )
+        if ict_dir != 0 and ict_score >= ICT_MIN_SCORE / 2:
+            kz = ict_details.get("killzone", "")
+            sb = "⚡SB" if ict_details.get("is_silver_bullet") else ""
+            log(f"  [ICT] {symbol}: {'BUY' if ict_dir==1 else 'SELL'} "
+                f"Score={ict_score:.1f} | "
+                f"KZ={kz}{sb} "
+                f"AMD={ict_details.get('amd', {}).get('phase','?')} "
+                f"OTE={'✓' if ict_details.get('ote') else '✗'} "
+                f"BB={'✓' if ict_details.get('breaker') else '✗'} "
+                f"SB_FVG={'✓' if ict_details.get('sb_fvg') else '✗'}")
+            all_setups.append((symbol, ict_dir, ict_score, ict_details, "ICT"))
+        else:
+            reason = ict_details.get("reason", f"ICT Score {ict_score:.1f}")
+            log(f"  [ICT] {symbol}: {reason}")
 
-        log(f"  {symbol}: {'BUY' if direction==1 else 'SELL'} "
-            f"Score={score:.1f}/10 | "
-            f"HA_D={details.get('ha_daily')} "
-            f"HA_H4={details.get('ha_h4')} | "
-            f"OB={'✓' if details.get('ob') else '✗'} "
-            f"FVG={'✓' if details.get('fvg') else '✗'} "
-            f"Sweep={'✓' if details.get('sweep_m15') else '✗'} "
-            f"CHoCH={'✓' if details.get('m1_choch') else '✗'}")
+    # ── RESOLVE CONFLICTS: same symbol, both engines fire ─────────────────
+    # Group by symbol, pick highest score
+    best_by_symbol: dict[str, tuple] = {}
+    for setup in all_setups:
+        sym = setup[0]
+        if sym not in best_by_symbol or setup[2] > best_by_symbol[sym][2]:
+            best_by_symbol[sym] = setup
 
-        setups.append((symbol, direction, score, details))
+    # Sort by score descending
+    ranked = sorted(best_by_symbol.values(), key=lambda x: x[2], reverse=True)
 
-    # ── Sort by score descending ──────────────────────────────────────────
-    setups.sort(key=lambda x: x[2], reverse=True)
-
-    # ── Execute top setups ────────────────────────────────────────────────
-    for symbol, direction, score, details in setups:
+    # ── EXECUTE ───────────────────────────────────────────────────────────
+    for symbol, direction, score, details, engine in ranked:
         if open_count >= MAX_CONCURRENT_TRADES:
             break
-
         if not passes_correlation_filter(symbol, direction):
-            log(f"  {symbol}: Correlation filter — skipping")
+            log(f"  {symbol}: Correlation filter — skipping"); continue
+
+        min_score = MIN_SIGNAL_SCORE if engine == "APA" else ICT_MIN_SCORE
+        if score < min_score / 2:   # allow half-lot for borderline
             continue
 
-        if score >= MIN_SIGNAL_SCORE:
-            success = place_trade(symbol, direction, score, details)
-            if success:
-                open_count += 1
+        success = place_trade(symbol, direction, score, details, engine)
+        if success:
+            open_count += 1
 
     tg_flush()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-#  CANDLE CLOCK — run scan only on new M5 candle
+#  CANDLE CLOCK
 # ─────────────────────────────────────────────────────────────────────────────
 
 _last_candle_time: int = 0
 
 def is_new_candle() -> bool:
     global _last_candle_time
-    rates = mt5.copy_rates_from_pos("EURUSD", TF_M5, 0, 1)
-    if rates is None or len(rates) == 0:
-        rates = mt5.copy_rates_from_pos(
-            "Volatility 25 Index", TF_M5, 0, 1)
-    if rates is None or len(rates) == 0:
-        return False
-    t = int(rates[0]["time"])
-    if t != _last_candle_time:
-        _last_candle_time = t
-        return True
+    # Try real symbol first, fall back to synthetic
+    for sym in ("EURUSD", "Volatility 25 Index"):
+        rates = mt5.copy_rates_from_pos(sym, TF_M5, 0, 1)
+        if rates and len(rates) > 0:
+            t = int(rates[0]["time"])
+            if t != _last_candle_time:
+                _last_candle_time = t
+                return True
+            return False
     return False
 
 
@@ -909,8 +858,7 @@ def is_new_candle() -> bool:
 
 def start_bot() -> None:
     if not mt5.initialize():
-        print("Failed to initialise MT5")
-        return
+        print("Failed to initialise MT5"); return
 
     LOGIN    = int(os.getenv("MT5_LOGIN",    0))
     PASSWORD = os.getenv("MT5_PASSWORD", "")
@@ -918,37 +866,38 @@ def start_bot() -> None:
 
     if not LOGIN or not PASSWORD or not SERVER:
         print("ERROR: MT5 credentials missing from .env")
-        mt5.shutdown()
-        return
+        mt5.shutdown(); return
 
     if not mt5.login(LOGIN, password=PASSWORD, server=SERVER):
         print(f"MT5 login failed: {mt5.last_error()}")
-        mt5.shutdown()
-        return
+        mt5.shutdown(); return
 
     acc = mt5.account_info()
     log("=" * 60)
-    log("NGAO Scalper v3.0 — Pure PA | APA/SMC | HA Bias")
-    log(f"Account: {LOGIN} @ {SERVER}")
-    log(f"Balance: ${acc.balance:.2f}  Leverage: 1:{acc.leverage}")
-    log(f"Symbols: {', '.join(SYMBOLS)}")
-    log(f"Risk tier: {get_risk_percent(acc.balance)}%/trade")
+    log("NGAO Scalper v4.0 — Dual Engine: APA/SMC + ICT")
+    log(f"Account : {LOGIN} @ {SERVER}")
+    log(f"Balance : ${acc.balance:.2f}  Leverage: 1:{acc.leverage}")
+    log(f"Symbols : {', '.join(SYMBOLS)}")
+    log(f"Risk    : {get_risk_percent(acc.balance)}%/trade")
+    log("Engines : APA/SMC (HA+OB+FVG+Sweep+BOS+CHoCH) | "
+        "ICT (IPDA+AMD+OTE+BB+MB+SilverBullet)")
     log("=" * 60)
 
     reconcile_on_startup()
 
     tg_queue(
-        f"🤖 <b>NGAO Scalper v3.0 STARTED</b>\n"
+        f"🤖 <b>NGAO Scalper v4.0 STARTED</b>\n"
+        f"<b>Dual Engine: APA/SMC + ICT</b>\n"
         f"Balance: ${acc.balance:.2f}\n"
         f"Symbols: {len(SYMBOLS)}\n"
-        f"Risk: {get_risk_percent(acc.balance)}%/trade"
+        f"Risk:    {get_risk_percent(acc.balance)}%/trade\n"
+        f"ICT: IPDA · AMD · OTE · Breaker · Mitigation · Silver Bullet"
     )
     tg_flush()
 
     try:
         while get_state() != "STOPPED":
             if get_state() == "PAUSED":
-                # Resume automatically at new day
                 now_utc = datetime.now(timezone.utc)
                 if daily_tracker._last_reset_date != now_utc.strftime("%Y-%m-%d"):
                     log("  New day — resuming from daily halt")
@@ -957,18 +906,14 @@ def start_bot() -> None:
                     log("  [PAUSED] Waiting...")
                     time.sleep(SCAN_INTERVAL_SECS)
                     continue
-
             try:
                 if is_new_candle():
                     run_scan_cycle()
                 else:
-                    # Still manage positions on every tick cycle
                     manage_open_positions()
             except Exception as e:
                 log(f"  [CYCLE ERROR] {type(e).__name__}: {e}")
-
             time.sleep(SCAN_INTERVAL_SECS)
-
     except KeyboardInterrupt:
         log("Bot stopped by user.")
     finally:
