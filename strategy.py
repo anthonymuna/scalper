@@ -743,3 +743,42 @@ def detect_scalp_signal(symbol: str, symbol_data: dict,
         return 0, score, {"reason": f"Score too low: {score:.1f}/10"}
 
     return direction, score, details
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  VOLUME PROFILE INTEGRATION WRAPPER — called from detect_scalp_signal
+# ─────────────────────────────────────────────────────────────────────────────
+
+def apply_vp_to_apa_signal(details: dict, vp_stack: dict,
+                            sym_point: float) -> tuple[float, dict]:
+    """
+    Score an APA signal against Volume Profile levels.
+    Called after detect_scalp_signal passes all gates.
+
+    Returns (vp_score_delta, vp_breakdown).
+    Caller adds vp_score_delta to the base score.
+    """
+    from volume_profile import get_vp_confluence, get_vp_tp_target
+
+    entry_price = details.get("current_price", 0.0)
+    direction   = details.get("direction", 0)
+    ob          = details.get("ob")
+    fvg         = details.get("fvg")
+
+    # Use OB/FVG midpoint as entry price if available
+    if ob and not ob.get("mitigated"):
+        entry_price = ob["mid"]
+    elif fvg and not fvg.get("filled"):
+        entry_price = fvg["mid"]
+
+    vp_score, vp_bd = get_vp_confluence(
+        vp_stack    = vp_stack,
+        entry_price = entry_price,
+        direction   = direction,
+        sym_point   = sym_point,
+    )
+
+    # Nearest VP TP level — used in place_trade if closer than 1:3 RR
+    vp_tp = get_vp_tp_target(vp_stack, entry_price, direction)
+
+    return vp_score, {**vp_bd, "vp_tp_level": vp_tp}

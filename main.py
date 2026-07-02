@@ -39,11 +39,13 @@ from config import (
     get_risk_percent,
 )
 from strategy import (
+    apply_vp_to_apa_signal,
     detect_scalp_signal,
     get_structure_trail_sl,
     get_ha_bias,
 )
 from ict_strategy import (
+    apply_vp_to_ict_signal,
     detect_ict_signal,
     get_active_killzone,
     ICT_MIN_SCORE,
@@ -423,6 +425,22 @@ def manage_open_positions() -> None:
                     if close_position(pos, "CHoCH flip"):
                         tg_queue(f"🔄 CHoCH EXIT: {symbol} | RR: {rr:.2f}")
 
+        # ── POC STALL EXIT — price stuck at POC with no momentum ─────────
+        # Only check after TP1 hit (we're at breakeven, no risk to close)
+        if ticket in _tp1_done and rr > 0.3:
+            df_m5 = get_df(symbol, TF_M5, 10)
+            if df_m5 is not None:
+                from volume_profile import build_vp_stack, check_poc_stall
+                sym_data_mini = {"h1": get_df(symbol, TF_H1, 100),
+                                 "m15": get_df(symbol, TF_M15, 100)}
+                vp_mini = build_vp_stack(sym_data_mini, sym_info.point)
+                if check_poc_stall(vp_mini, df_m5, sym_info.point):
+                    if close_position(pos, "POC stall exit"):
+                        tg_queue(f"🧲 POC STALL EXIT: {symbol} | "
+                                 f"RR: {rr:.2f} | POC={vp_mini.get('h1').poc:.5f}"
+                                 if vp_mini.get('h1') else
+                                 f"🧲 POC STALL EXIT: {symbol}")
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 #  PENDING ORDER EXPIRY
@@ -537,12 +555,23 @@ def place_trade(symbol: str, direction: int, score: float,
     if sl_price is None:
         sl_price = sl_calc
 
-    # Override TP with IPDA draw level if provided and valid
-    if ipda_tp_level > 0:
-        if direction == 1 and ipda_tp_level > entry_price:
-            tp_price = round(ipda_tp_level, digits)
-        elif direction == -1 and ipda_tp_level < entry_price:
-            tp_price = round(ipda_tp_level, digits)
+    # Override TP with best available institutional level:
+    # IPDA draw level or VP key level — whichever is closer in trade direction
+    vp_tp_level = details.get("vp_tp_level", 0.0)
+    candidates  = []
+    for lvl in [ipda_tp_level, vp_tp_level]:
+        if lvl <= 0:
+            continue
+        if direction == 1 and lvl > entry_price:
+            candidates.append(lvl)
+        elif direction == -1 and lvl < entry_price:
+            candidates.append(lvl)
+    if candidates:
+        # Use nearest level in direction (first meaningful TP)
+        best_tp = min(candidates) if direction == 1 else max(candidates)
+        tp_price = round(best_tp, digits)
+        log(f"  TP override: {best_tp:.5f} "
+            f"(IPDA={ipda_tp_level:.5f} VP={vp_tp_level:.5f})")
 
     # Validate SL/TP against broker stop levels
     sl_price, tp_price = validate_sl_tp(symbol, entry_price,
@@ -764,6 +793,15 @@ def run_scan_cycle() -> None:
 
         spread_pts = get_spread_points(symbol)
 
+        # ── VOLUME PROFILE — built once, shared by both engines ──────────
+        from volume_profile import build_vp_stack
+        vp_stack = build_vp_stack(data, sym_info.point)
+        vp_h1 = vp_stack.get("h1")
+        if vp_h1 and vp_h1.valid:
+            log(f"  [VP] {symbol}: POC={vp_h1.poc:.5f} "
+                f"VAH={vp_h1.vah:.5f} VAL={vp_h1.val:.5f} "
+                f"HVN={len(vp_h1.hvn_prices)} LVN={len(vp_h1.lvn_prices)}")
+
         # Pre-compute HA bias once — shared by both engines
         ha_daily = get_ha_bias(data["d1"])
         ha_h4    = get_ha_bias(data["h4"])
@@ -773,12 +811,20 @@ def run_scan_cycle() -> None:
             symbol, data, sym_info.point, spread_pts
         )
         if apa_dir != 0 and apa_score >= MIN_SIGNAL_SCORE_HALF:
+            # Apply Volume Profile confluence to APA score
+            vp_delta, vp_bd = apply_vp_to_apa_signal(
+                apa_details, vp_stack, sym_info.point)
+            apa_score   += vp_delta
+            apa_details["vp"]          = vp_bd
+            apa_details["vp_tp_level"] = vp_bd.get("vp_tp_level", 0.0)
+            vp_tp = apa_details["vp_tp_level"]
             log(f"  [APA] {symbol}: {'BUY' if apa_dir==1 else 'SELL'} "
-                f"Score={apa_score:.1f} | "
+                f"Score={apa_score:.1f} (VP{vp_delta:+.1f}) | "
                 f"OB={'✓' if apa_details.get('ob') else '✗'} "
                 f"FVG={'✓' if apa_details.get('fvg') else '✗'} "
                 f"Sweep={'✓' if apa_details.get('sweep_m15') else '✗'} "
-                f"CHoCH={'✓' if apa_details.get('m1_choch') else '✗'}")
+                f"CHoCH={'✓' if apa_details.get('m1_choch') else '✗'} "
+                f"VP_TP={vp_tp:.5f}")
             all_setups.append((symbol, apa_dir, apa_score, apa_details, "APA"))
         else:
             reason = apa_details.get("reason", f"Score {apa_score:.1f}")
@@ -789,15 +835,23 @@ def run_scan_cycle() -> None:
             symbol, data, sym_info.point, ha_daily, ha_h4
         )
         if ict_dir != 0 and ict_score >= ICT_MIN_SCORE / 2:
-            kz = ict_details.get("killzone", "")
-            sb = "⚡SB" if ict_details.get("is_silver_bullet") else ""
+            # Apply Volume Profile confluence to ICT score
+            vp_delta, vp_bd = apply_vp_to_ict_signal(
+                ict_details, vp_stack, sym_info.point)
+            ict_score   += vp_delta
+            ict_details["vp"]          = vp_bd
+            ict_details["vp_tp_level"] = vp_bd.get("vp_tp_level", 0.0)
+            kz    = ict_details.get("killzone", "")
+            sb    = "⚡SB" if ict_details.get("is_silver_bullet") else ""
+            vp_tp = ict_details["vp_tp_level"]
             log(f"  [ICT] {symbol}: {'BUY' if ict_dir==1 else 'SELL'} "
-                f"Score={ict_score:.1f} | "
+                f"Score={ict_score:.1f} (VP{vp_delta:+.1f}) | "
                 f"KZ={kz}{sb} "
                 f"AMD={ict_details.get('amd', {}).get('phase','?')} "
                 f"OTE={'✓' if ict_details.get('ote') else '✗'} "
                 f"BB={'✓' if ict_details.get('breaker') else '✗'} "
-                f"SB_FVG={'✓' if ict_details.get('sb_fvg') else '✗'}")
+                f"SB_FVG={'✓' if ict_details.get('sb_fvg') else '✗'} "
+                f"VP_TP={vp_tp:.5f}")
             all_setups.append((symbol, ict_dir, ict_score, ict_details, "ICT"))
         else:
             reason = ict_details.get("reason", f"ICT Score {ict_score:.1f}")

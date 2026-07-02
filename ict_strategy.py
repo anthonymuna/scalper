@@ -889,3 +889,44 @@ def detect_ict_signal(
         }
 
     return direction, score, details
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  VOLUME PROFILE INTEGRATION WRAPPER — called from detect_ict_signal
+# ─────────────────────────────────────────────────────────────────────────────
+
+def apply_vp_to_ict_signal(details: dict, vp_stack: dict,
+                            sym_point: float) -> tuple[float, dict]:
+    """
+    Score an ICT signal against Volume Profile levels.
+    Passes OTE zone and IPDA level for deeper alignment checking.
+
+    Returns (vp_score_delta, vp_breakdown).
+    """
+    from volume_profile import get_vp_confluence, get_vp_tp_target
+
+    entry_zone   = details.get("entry_zone")
+    direction    = details.get("direction", 0)
+    ote          = details.get("ote")
+    ipda         = details.get("ipda", {})
+    sb_fvg       = details.get("sb_fvg")
+
+    entry_price  = entry_zone["mid"] if entry_zone else details.get("current_price", 0.0)
+    ipda_key     = "nearest_bull_draw" if direction == 1 else "nearest_bear_draw"
+    ipda_draw    = ipda.get(ipda_key, {}) or {}
+    ipda_level   = ipda_draw.get("level", 0.0)
+
+    vp_score, vp_bd = get_vp_confluence(
+        vp_stack    = vp_stack,
+        entry_price = entry_price,
+        direction   = direction,
+        sym_point   = sym_point,
+        ote         = ote,
+        ipda_level  = ipda_level,
+        sb_fvg      = sb_fvg,
+    )
+
+    # Nearest VP level — may override IPDA TP if closer
+    vp_tp = get_vp_tp_target(vp_stack, entry_price, direction)
+
+    return vp_score, {**vp_bd, "vp_tp_level": vp_tp}
