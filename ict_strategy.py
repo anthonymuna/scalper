@@ -810,6 +810,16 @@ def detect_ict_signal(
     if is_silver_bullet:
         sb_fvg = find_silver_bullet_fvg(m5, direction)
 
+    # ── ICT SNIPER SHORT ADDITIONS (direction == -1) ─────────────────────
+    judas        = detect_judas_swing(m5, direction)
+    in_premium   = is_in_premium_array(current_price, d1, direction)
+    bearish_ote  = detect_bearish_ote(h1, m5) if direction == -1 else None
+    bearish_fvg  = detect_bearish_fvg_entry(m5) if direction == -1 else None
+
+    short_score, short_bd = score_short_ict_additions(
+        judas, in_premium, bearish_ote, bearish_fvg
+    )
+
     # ── Score ─────────────────────────────────────────────────────────────
     score, breakdown = score_ict_setup(
         direction        = direction,
@@ -823,6 +833,14 @@ def detect_ict_signal(
         mitigation       = mitigation,
         displacement_fvg = displacement,
     )
+
+    # Add short-specific scores
+    score    += short_score
+    breakdown = {**breakdown, **short_bd}
+
+    # Bearish FVG entry zone takes priority for sniper shorts
+    if direction == -1 and bearish_fvg:
+        ote = bearish_ote  # use bearish OTE as the ote reference
 
     # ── Entry Zone: prefer Silver Bullet FVG > OTE > Breaker > Mitigation ─
     entry_zone = None
@@ -879,6 +897,11 @@ def detect_ict_signal(
         "entry_zone":      entry_zone,
         "entry_source":    entry_source,
         "manip_sl":        manip_sl,
+        "judas":           judas,
+        "in_premium":      in_premium,
+        "bearish_ote":     bearish_ote,
+        "bearish_fvg":     bearish_fvg,
+        "short_score":     short_score,
         "current_price":   current_price,
     }
 
@@ -930,3 +953,271 @@ def apply_vp_to_ict_signal(details: dict, vp_stack: dict,
     vp_tp = get_vp_tp_target(vp_stack, entry_price, direction)
 
     return vp_score, {**vp_bd, "vp_tp_level": vp_tp}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  ICT SNIPER SHORT CONCEPTS
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Judas Swing detection window (UTC)
+# NY session: price sweeps highs in first 30-60 mins then reverses down
+JUDAS_SWING_START_UTC = 12   # 12:00 UTC = NY open
+JUDAS_SWING_END_UTC   = 13   # 13:00 UTC = first hour only
+
+# Premium array threshold — price must be above 50% of daily range
+# to qualify for bearish OTE (selling in premium)
+PREMIUM_THRESHOLD = 0.50
+
+
+def detect_judas_swing(df_m5: pd.DataFrame, direction: int) -> dict:
+    """
+    Judas Swing — ICT concept for NY open false move.
+
+    Bullish Judas (sets up SHORT):
+      - During NY open killzone (12:00-13:00 UTC)
+      - Price pushes UP aggressively (sweeps Asian/London highs)
+      - Looks like breakout but is manipulation
+      - Smart money selling into the retail longs
+      - Real move is DOWN after the sweep
+
+    Bearish Judas (sets up LONG):
+      - Price pushes DOWN first, sweeps lows
+      - Real move is UP
+
+    Returns:
+      {
+        "detected":    bool,
+        "sweep_level": float,   — the high/low that was swept
+        "sweep_price": float,   — the actual wick extreme
+        "reversal_confirmed": bool,  — price closed back past sweep level
+        "judas_type":  "bull_sweep_short" | "bear_sweep_long"
+      }
+    """
+    result = {
+        "detected": False,
+        "sweep_level": 0.0,
+        "sweep_price": 0.0,
+        "reversal_confirmed": False,
+        "judas_type": "",
+    }
+
+    hour = utc_hour()
+    if not (JUDAS_SWING_START_UTC <= hour < JUDAS_SWING_END_UTC):
+        return result
+
+    if len(df_m5) < 20:
+        return result
+
+    # Reference level: high/low from previous 2 hours (Asian close)
+    ref_window = df_m5.iloc[-24:-4]   # ~2 hours back, not last 4 bars
+    ref_high   = float(ref_window["high"].max())
+    ref_low    = float(ref_window["low"].min())
+
+    # Look at last 4 M5 candles for the sweep and reversal
+    recent = df_m5.tail(4).reset_index(drop=True)
+
+    for i in range(len(recent) - 1):
+        c    = recent.iloc[i]
+        next = recent.iloc[i + 1]
+
+        if direction == -1:
+            # Bullish Judas → SHORT setup
+            # Wick above ref_high but closed below it
+            swept_high = c["high"] > ref_high and c["close"] < ref_high
+            if swept_high:
+                # Confirm reversal: next candle bearish and closes lower
+                reversal = next["close"] < next["open"]
+                result.update({
+                    "detected":           True,
+                    "sweep_level":        ref_high,
+                    "sweep_price":        float(c["high"]),
+                    "reversal_confirmed": reversal,
+                    "judas_type":         "bull_sweep_short",
+                })
+                return result
+
+        elif direction == 1:
+            # Bearish Judas → LONG setup
+            swept_low = c["low"] < ref_low and c["close"] > ref_low
+            if swept_low:
+                reversal = next["close"] > next["open"]
+                result.update({
+                    "detected":           True,
+                    "sweep_level":        ref_low,
+                    "sweep_price":        float(c["low"]),
+                    "reversal_confirmed": reversal,
+                    "judas_type":         "bear_sweep_long",
+                })
+                return result
+
+    return result
+
+
+def is_in_premium_array(current_price: float, df_d1: pd.DataFrame,
+                          direction: int) -> bool:
+    """
+    ICT Premium/Discount Array.
+
+    For SHORT entries: price must be in PREMIUM zone (above 50% of daily range)
+    For LONG  entries: price must be in DISCOUNT zone (below 50% of daily range)
+
+    Premium = upper 50% of the current day's range
+    Discount = lower 50%
+    50% equilibrium = midpoint (also aligns with OTE concept)
+    """
+    if len(df_d1) < 2:
+        return True   # Can't determine — don't block
+
+    # Use previous day range as reference
+    prev = df_d1.iloc[-2]
+    day_high = float(prev["high"])
+    day_low  = float(prev["low"])
+    day_rng  = day_high - day_low
+
+    if day_rng <= 0:
+        return True
+
+    equilibrium = day_low + day_rng * PREMIUM_THRESHOLD
+
+    if direction == -1:
+        # Short: must be in premium (above equilibrium)
+        return current_price > equilibrium
+    else:
+        # Long: must be in discount (below equilibrium)
+        return current_price < equilibrium
+
+
+def detect_bearish_ote(df_h1: pd.DataFrame, df_m5: pd.DataFrame) -> dict | None:
+    """
+    Bearish OTE — Optimal Trade Entry for SHORT positions.
+
+    After a bearish displacement (strong down move) on H1,
+    price retraces INTO the 0.62–0.79 Fibonacci zone (premium retracement).
+    This is where institutions sell more positions.
+
+    Selling in a retracement = premium OTE short entry.
+
+    Returns: {ote_low, ote_705, ote_high, swing_high, swing_low} or None
+    """
+    if len(df_h1) < 10 or len(df_m5) < 5:
+        return None
+
+    current_price = float(df_m5.iloc[-1]["close"])
+    window = df_h1.tail(15).reset_index(drop=True)
+
+    # Find the most recent bearish impulse swing
+    for i in range(len(window) - 2, 1, -1):
+        # Swing high: higher than both neighbors
+        if (window.loc[i, "high"] > window.loc[i-1, "high"] and
+                window.loc[i, "high"] > window.loc[i+1, "high"]):
+
+            swing_high = float(window.loc[i, "high"])
+
+            # Find swing low after this swing high
+            subsequent = window.iloc[i+1:]
+            if len(subsequent) == 0:
+                continue
+
+            swing_low = float(subsequent["low"].min())
+
+            if swing_high <= swing_low:
+                continue
+
+            # Calculate OTE zone for SHORT (selling in premium retracement)
+            ote = calculate_ote_zone(swing_low, swing_high, direction=-1)
+
+            # Is current price in this OTE zone?
+            if price_in_ote(current_price, ote):
+                return {
+                    **ote,
+                    "swing_high": swing_high,
+                    "swing_low":  swing_low,
+                    "type": "bearish_ote",
+                }
+
+    return None
+
+
+def detect_bearish_fvg_entry(df_m5: pd.DataFrame) -> dict | None:
+    """
+    Bearish FVG entry for sniper shorts.
+
+    After displacement down, price retraces into the FVG created
+    by the displacement. This is the ICT sniper short entry:
+    sell at the FVG top (where price re-enters the gap).
+
+    The FVG acts as resistance on the return.
+
+    Returns: {fvg_top, fvg_bottom, fvg_mid, entry_price} or None
+    """
+    if len(df_m5) < 10:
+        return None
+
+    current_price = float(df_m5.iloc[-1]["close"])
+    window = df_m5.tail(10).reset_index(drop=True)
+
+    for i in range(2, len(window)):
+        c0 = window.iloc[i - 2]
+        c1 = window.iloc[i - 1]   # displacement candle
+        c2 = window.iloc[i]
+
+        # Bearish FVG: c0["low"] > c2["high"]
+        if c0["low"] > c2["high"]:
+            fvg_top    = float(c0["low"])
+            fvg_bottom = float(c2["high"])
+            fvg_mid    = (fvg_top + fvg_bottom) / 2.0
+
+            # Displacement candle must be bearish
+            if c1["close"] >= c1["open"]:
+                continue
+
+            # Price is now returning into the FVG (retracement)
+            if fvg_bottom <= current_price <= fvg_top:
+                return {
+                    "fvg_top":    fvg_top,
+                    "fvg_bottom": fvg_bottom,
+                    "fvg_mid":    fvg_mid,
+                    "entry_price": fvg_top,   # sell at top of gap
+                    "type": "bearish_fvg_retracement",
+                }
+
+    return None
+
+
+def score_short_ict_additions(
+    judas:        dict,
+    in_premium:   bool,
+    bearish_ote:  dict | None,
+    bearish_fvg:  dict | None,
+) -> tuple[float, dict]:
+    """
+    Additional scoring for ICT sniper short setups.
+    These scores ADD to the base ICT score.
+    """
+    score = 0.0
+    bd    = {}
+
+    # Judas Swing confirmed (+2 — very high conviction)
+    if judas.get("detected") and judas.get("reversal_confirmed"):
+        score += 2.0
+        bd["judas_swing"] = 2.0
+    elif judas.get("detected"):
+        score += 1.0
+        bd["judas_swing_unconfirmed"] = 1.0
+
+    # Price in premium array for short (+1)
+    if in_premium:
+        score += 1.0
+        bd["premium_array"] = 1.0
+
+    # Bearish OTE zone hit (+1.5)
+    if bearish_ote:
+        score += 1.5
+        bd["bearish_ote"] = 1.5
+
+    # Bearish FVG retracement entry (+1)
+    if bearish_fvg:
+        score += 1.0
+        bd["bearish_fvg"] = 1.0
+
+    return score, bd

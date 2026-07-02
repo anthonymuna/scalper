@@ -190,3 +190,28 @@ MAGIC_NUMBER        = 202400
 SCAN_INTERVAL_SECS  = 10
 DASHBOARD_PORT      = 5000
 BALANCE_MILESTONES  = [10, 20, 50, 100, 200, 500, 1000]
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  SNIPER SCALP MODE (ICT 2-candle exits)
+# ─────────────────────────────────────────────────────────────────────────────
+# When enabled, ICT trades target a quick 2-candle exit:
+#   - Check every candle after entry
+#   - If trade is in profit at candle close → close immediately
+#   - If not in profit → hold, check again next candle
+#   - Hard candle limit: close anyway after MAX_SNIPER_CANDLES regardless
+#   - Never close at a loss within the sniper window
+#   - After sniper window expires → hand off to normal management
+
+SNIPER_MODE_ENABLED    = True   # Enable 2-candle profit-only exits for ICT
+SNIPER_CANDLE_TF       = 5      # M5 candles (same as scan TF)
+MAX_SNIPER_CANDLES     = 6      # Max candles to hold before normal management
+MIN_SNIPER_PROFIT_PTS  = 10     # Minimum profit in points to trigger close
+                                 # Prevents closing on 0.1 pip gain
+SNIPER_SYMBOLS = [              # Only these symbols use sniper mode
+    "XAUUSD", "XAUUSDm",
+    "EURUSD", "GBPUSD",
+    "Volatility 75 Index",
+    "Volatility 25 Index",
+    "Boom 1000 Index",
+    "Crash 1000 Index",
+]

@@ -35,6 +35,8 @@ from config import (
     LONDON_START, LONDON_END, NY_START, NY_END,
     SCAN_INTERVAL_SECS, BALANCE_MILESTONES,
     MAX_CONCURRENT_TRADES, MAX_HOLD_MINUTES,
+    SNIPER_MODE_ENABLED, MAX_SNIPER_CANDLES,
+    MIN_SNIPER_PROFIT_PTS, SNIPER_SYMBOLS,
     TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, TELEGRAM_FLUSH_SECS,
     get_risk_percent,
 )
@@ -46,6 +48,7 @@ from strategy import (
 )
 from ict_strategy import (
     apply_vp_to_ict_signal,
+    detect_judas_swing,
     detect_ict_signal,
     get_active_killzone,
     ICT_MIN_SCORE,
@@ -239,6 +242,7 @@ def fetch_all_timeframes(symbol: str) -> dict | None:
 
 _tp1_done: set = set()
 _tp2_done: set = set()
+_sniper_tracker: dict = {}  # {ticket: {candles,engine,entry_price,symbol,direction}}
 
 def close_partial(ticket: int, percent: float, symbol: str) -> bool:
     pos = mt5.positions_get(ticket=ticket)
@@ -322,7 +326,77 @@ def close_all_positions(reason: str = "Emergency") -> None:
 #  MANAGE OPEN POSITIONS
 # ─────────────────────────────────────────────────────────────────────────────
 
+
+def manage_sniper_positions() -> None:
+    """
+    ICT Sniper Mode — profit-only candle-based exit.
+
+    Every M5 candle for registered ICT trades:
+      - If profit >= MIN_SNIPER_PROFIT_PTS  -> close trade (profit locked)
+      - If not in profit                    -> hold, check next candle
+      - If candles >= MAX_SNIPER_CANDLES    -> hand to normal TP/SL management
+    Never closes at a loss within the sniper window.
+    """
+    if not SNIPER_MODE_ENABLED or not _sniper_tracker:
+        return
+
+    to_remove = []
+
+    for ticket, info in list(_sniper_tracker.items()):
+        pos_list = mt5.positions_get(ticket=ticket)
+        if not pos_list:
+            to_remove.append(ticket)
+            continue
+
+        pos       = pos_list[0]
+        symbol    = pos.symbol
+        direction = info["direction"]
+        info["candles"] += 1
+        candles   = info["candles"]
+
+        sym_info = mt5.symbol_info(symbol)
+        if not sym_info:
+            continue
+        point = sym_info.point
+        tick  = mt5.symbol_info_tick(symbol)
+        if not tick:
+            continue
+
+        cur   = tick.bid if direction == 1 else tick.ask
+        entry = info["entry_price"]
+        pts   = ((cur - entry) * direction) / point if point > 0 else 0
+
+        side = "SHORT" if direction == -1 else "LONG"
+        log("[SNIPER] #" + str(ticket) + " " + symbol + " " + side
+            + " c" + str(candles) + "/" + str(MAX_SNIPER_CANDLES)
+            + " profit=" + str(round(pts, 1)) + "pts")
+
+        if pts >= MIN_SNIPER_PROFIT_PTS:
+            if close_position(pos, "Sniper profit exit c" + str(candles)):
+                pnl = pos.profit
+                tg_queue(
+                    "[SNIPER EXIT] " + side + " " + symbol + "\n"
+                    "Profit: " + str(round(pts, 1)) + "pts | $"
+                    + str(round(pnl, 2)) + "\n"
+                    "Candles: " + str(candles)
+                )
+                to_remove.append(ticket)
+            continue
+
+        if candles >= MAX_SNIPER_CANDLES:
+            log("[SNIPER] " + symbol + " max candles — handing to normal mgmt")
+            tg_queue(
+                "[SNIPER->NORMAL] " + symbol + " " + side
+                + " c" + str(candles) + " profit=" + str(round(pts, 1)) + "pts"
+            )
+            to_remove.append(ticket)
+
+    for t in to_remove:
+        _sniper_tracker.pop(t, None)
+
 def manage_open_positions() -> None:
+    manage_sniper_positions()
+
     positions = mt5.positions_get()
     if not positions:
         return
@@ -642,6 +716,17 @@ def place_trade(symbol: str, direction: int, score: float,
             f"Score: <code>{score:.1f}/10</code>"
         )
         sym_tracker.record_entry(symbol)
+        if (SNIPER_MODE_ENABLED and engine == 'ICT'
+                and symbol in SNIPER_SYMBOLS):
+            new_ticket = result.order if hasattr(result, 'order') else 0
+            if new_ticket > 0:
+                _sniper_tracker[new_ticket] = {
+                    'candles': 0, 'engine': engine,
+                    'entry_price': entry_price, 'symbol': symbol,
+                    'direction': direction,
+                }
+                log('[SNIPER] ' + symbol
+                    + ' registered ticket=' + str(new_ticket))
         return True
 
     rc = result.retcode if result else "None"
@@ -851,6 +936,8 @@ def run_scan_cycle() -> None:
                 f"OTE={'✓' if ict_details.get('ote') else '✗'} "
                 f"BB={'✓' if ict_details.get('breaker') else '✗'} "
                 f"SB_FVG={'✓' if ict_details.get('sb_fvg') else '✗'} "
+                f"Judas={'✓' if ict_details.get('judas',{}).get('detected') else '✗'} "
+                f"Premium={'✓' if ict_details.get('in_premium') else '✗'} "
                 f"VP_TP={vp_tp:.5f}")
             all_setups.append((symbol, ict_dir, ict_score, ict_details, "ICT"))
         else:
