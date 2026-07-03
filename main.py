@@ -82,7 +82,13 @@ def set_state(state: str) -> None:
 #  LOGGING
 # ─────────────────────────────────────────────────────────────────────────────
 
-_LOG_PATH = os.path.join(os.path.dirname(__file__), "bot_logs.txt")
+from platform_utils import (
+    ensure_utc_timezone, get_log_path,
+    get_mt5_module, get_mt5_init_kwargs,
+    print_platform_info,
+)
+ensure_utc_timezone()   # force UTC before any datetime work
+_LOG_PATH = get_log_path()
 
 def log(msg: str) -> None:
     stamped = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {msg}"
@@ -998,8 +1004,9 @@ def is_new_candle() -> bool:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def start_bot() -> None:
-    if not mt5.initialize():
-        print("Failed to initialise MT5"); return
+    init_kwargs = get_mt5_init_kwargs()
+    if not mt5.initialize(**init_kwargs):
+        print("Failed to initialise MT5:", mt5.last_error()); return
 
     LOGIN    = int(os.getenv("MT5_LOGIN",    0))
     PASSWORD = os.getenv("MT5_PASSWORD", "")
@@ -1015,7 +1022,9 @@ def start_bot() -> None:
 
     acc = mt5.account_info()
     log("=" * 60)
-    log("NGAO Scalper v4.0 — Dual Engine: APA/SMC + ICT")
+    log("NGAO Scalper v4.2 — Dual Engine: APA/SMC + ICT")
+    from platform_utils import get_platform_name
+    log(f"Platform: {get_platform_name()}")
     log(f"Account : {LOGIN} @ {SERVER}")
     log(f"Balance : ${acc.balance:.2f}  Leverage: 1:{acc.leverage}")
     log(f"Symbols : {', '.join(SYMBOLS)}")

@@ -1,6 +1,17 @@
-MetaTrader5
-pandas
-numpy
-python-dotenv
+# ── Core trading ──────────────────────────────────────────────────────────────
+MetaTrader5>=5.0.45        # Windows native / Wine Python
+pandas>=2.0.0
+numpy>=1.24.0
+python-dotenv>=1.0.0
+
+# ── Telegram ──────────────────────────────────────────────────────────────────
 python-telegram-bot>=20.0
-flask
+
+# ── Dashboard ─────────────────────────────────────────────────────────────────
+flask>=3.0.0
+
+# ── Linux / Wine compatibility ────────────────────────────────────────────────
+# ONLY needed on Linux when NOT running the bot inside Wine Python.
+# If using: wine python run.py  → comment this out (MetaTrader5 above covers it)
+# If using: python run.py on Linux natively → uncomment this line:
+# mt5linux>=0.1.6

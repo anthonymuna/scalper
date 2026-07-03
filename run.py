@@ -1,48 +1,90 @@
 """
-run.py — Single entry point for the APA Scalping Bot.
+run.py — NGAO Scalper Bot v4.2 — Single entry point
+=====================================================
+Works on:
+  Windows native  : python run.py
+  Linux + Wine    : wine python run.py   OR  python run.py (with mt5linux)
+  Kali Linux      : same as Linux
 
-Starts two threads concurrently:
-  1. Trading bot  (main.py → start_bot)
-  2. Telegram bot (telegram_bot.py → run_telegram_bot)
+Starts:
+  Thread 1 — Trading engine  (main.py → start_bot)
+  Thread 2 — Telegram controller (telegram_bot.py → run_telegram_bot)
 
 Usage:
-    python run.py
-
-Stop:  Ctrl+C  (or send /stop then /start via Telegram)
+  python run.py              # normal start
+  python run.py --check      # validate environment only, don't trade
 """
 
+import sys
+import os
 import threading
-import MetaTrader5 as mt5
+from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv()
+# ── Load .env before anything else ────────────────────────────────────────────
+_env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=_env_path)
 
-from main          import start_bot
-from telegram_bot  import run_telegram_bot
+# ── Platform detection and validation ─────────────────────────────────────────
+from platform_utils import (
+    ensure_utc_timezone,
+    print_platform_info,
+    validate_environment,
+    get_platform_name,
+    IS_WINDOWS, IS_LINUX, IS_WINE,
+)
+
+ensure_utc_timezone()   # Must be before any datetime imports
 
 
 def main():
-    print("=" * 60)
-    print("  APA Gold Scalping Bot v2")
-    print("  Starting trading engine + Telegram controller...")
-    print("=" * 60)
+    check_only = "--check" in sys.argv
 
-    # ── Telegram in a daemon thread ────────────────────────────────────────
+    print("=" * 62)
+    print("  NGAO Scalper Bot v4.2")
+    print("  Dual Engine: APA/SMC + ICT | Pure Price Action")
+    print("=" * 62)
+    print_platform_info()
+    print()
+
+    ok, issues = validate_environment()
+
+    if not ok:
+        print("\n[STARTUP BLOCKED] Fix the issues above before trading.")
+        sys.exit(1)
+
+    if check_only:
+        print("\n[--check mode] Environment OK. Not starting bot.")
+        sys.exit(0)
+
+    # ── Platform-specific MT5 import via platform_utils ───────────────────
+    from platform_utils import get_mt5_module
+    mt5 = get_mt5_module()
+
+    from main         import start_bot
+    from telegram_bot import run_telegram_bot
+
+    print("\nStarting engines...\n")
+
+    # ── Telegram runs in a daemon thread ──────────────────────────────────
     tg_thread = threading.Thread(
         target=run_telegram_bot,
         name="TelegramBot",
-        daemon=True,   # dies with the main thread
+        daemon=True,
     )
     tg_thread.start()
 
-    # ── Trading bot runs on the main thread (blocking) ────────────────────
+    # ── Trading bot runs on main thread (blocking) ─────────────────────────
     try:
         start_bot()
     except KeyboardInterrupt:
-        print("\nShutdown requested — stopping bot.")
+        print("\nShutdown requested — stopping.")
     finally:
-        mt5.shutdown()
-        print("Done.")
+        try:
+            mt5.shutdown()
+        except Exception:
+            pass
+        print("NGAO Scalper stopped.")
 
 
 if __name__ == "__main__":

@@ -6,9 +6,12 @@ if not mt5.initialize():
     exit()
 
 # Login credentials (same as main script)
-LOGIN = 5054434
-PASSWORD = "@!Form3South@"
-SERVER = "Headway-Demo"
+from dotenv import load_dotenv
+import os
+load_dotenv()
+LOGIN    = int(os.getenv("MT5_LOGIN", 0))
+PASSWORD = os.getenv("MT5_PASSWORD", "")
+SERVER   = os.getenv("MT5_SERVER",   "")
 if not mt5.login(LOGIN, password=PASSWORD, server=SERVER):
     err = mt5.last_error()
     print(f"MT5 login failed (code {err.retcode}): {err.message}")
